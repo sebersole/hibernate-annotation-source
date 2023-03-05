@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import org.hibernate.boot.models.source.internal.LazyAnnotationTarget;
 import org.hibernate.boot.models.source.spi.ClassDetails;
 import org.hibernate.boot.models.source.spi.MethodDetails;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 import static org.hibernate.boot.models.source.internal.ModifierUtils.isPersistableMethod;
 
@@ -22,7 +22,7 @@ public class MethodDetailsImpl extends LazyAnnotationTarget implements MethodDet
 	private final Method method;
 	private final ClassDetails type;
 
-	public MethodDetailsImpl(Method method, AnnotationProcessingContext processingContext) {
+	public MethodDetailsImpl(Method method, ModelProcessingContext processingContext) {
 		super( method::getAnnotations, processingContext );
 		this.method = method;
 		this.type = processingContext.getClassDetailsRegistry().resolveManagedClass(

@@ -19,7 +19,7 @@ import org.hibernate.boot.models.source.spi.ClassDetails;
 import org.hibernate.boot.models.source.spi.ClassDetailsRegistry;
 import org.hibernate.boot.models.source.spi.FieldDetails;
 import org.hibernate.boot.models.source.spi.MethodDetails;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 import org.hibernate.internal.util.IndexedConsumer;
 import org.hibernate.internal.util.collections.ArrayHelper;
 import org.hibernate.internal.util.collections.CollectionHelper;
@@ -38,7 +38,7 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 	private List<FieldDetailsImpl> fields;
 	private List<MethodDetailsImpl> methods;
 
-	public ClassDetailsImpl(XClass xClass, AnnotationProcessingContext processingContext) {
+	public ClassDetailsImpl(XClass xClass, ModelProcessingContext processingContext) {
 		super( xClass::getAnnotations, processingContext );
 		this.xClass = xClass;
 
@@ -47,7 +47,7 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 		processingContext.getClassDetailsRegistry().addManagedClass( this );
 	}
 
-	private ClassDetails determineSuperType(XClass xClass, AnnotationProcessingContext processingContext) {
+	private ClassDetails determineSuperType(XClass xClass, ModelProcessingContext processingContext) {
 		final XClass superclass = xClass.getSuperclass();
 		if ( superclass == null ) {
 			return null;
@@ -123,7 +123,7 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 		return (List) fields;
 	}
 
-	private static List<FieldDetailsImpl> resolveFields(XClass xClass, AnnotationProcessingContext processingContext) {
+	private static List<FieldDetailsImpl> resolveFields(XClass xClass, ModelProcessingContext processingContext) {
 		final List<XProperty> xFields = xClass.getDeclaredProperties( "field" );
 		final ArrayList<FieldDetailsImpl> fields = CollectionHelper.arrayList( xFields.size() );
 		for ( int i = 0; i < xFields.size(); i++ ) {
@@ -153,7 +153,7 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 
 	private static List<MethodDetailsImpl> resolveMethods(
 			XClass xClass,
-			AnnotationProcessingContext processingContext) {
+			ModelProcessingContext processingContext) {
 		final List<XMethod> xMethods = xClass.getDeclaredMethods();
 		final ArrayList<MethodDetailsImpl> methods = CollectionHelper.arrayList( xMethods.size() );
 		for ( int i = 0; i < xMethods.size(); i++ ) {

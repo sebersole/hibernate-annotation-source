@@ -8,7 +8,7 @@ package org.hibernate.boot.models.source.internal.reflection;
 
 import org.hibernate.boot.models.source.spi.ClassDetails;
 import org.hibernate.boot.models.source.spi.ClassDetailsBuilder;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
 
 /**
@@ -23,11 +23,11 @@ public class ClassDetailsBuilderImpl implements ClassDetailsBuilder {
 	public static final ClassDetailsBuilderImpl INSTANCE = new ClassDetailsBuilderImpl();
 
 	@Override
-	public ClassDetails buildClassDetails(String name, AnnotationProcessingContext processingContext) {
+	public ClassDetails buildClassDetails(String name, ModelProcessingContext processingContext) {
 		return buildClassDetailsStatic( name, processingContext );
 	}
 
-	public static ClassDetails buildClassDetailsStatic(String name, AnnotationProcessingContext processingContext) {
+	public static ClassDetails buildClassDetailsStatic(String name, ModelProcessingContext processingContext) {
 		return buildClassDetails(
 				processingContext.getMetadataBuildingContext()
 						.getBootstrapContext()
@@ -38,7 +38,7 @@ public class ClassDetailsBuilderImpl implements ClassDetailsBuilder {
 		);
 	}
 
-	public static ClassDetails buildClassDetails(Class<?> javaClass, AnnotationProcessingContext processingContext) {
+	public static ClassDetails buildClassDetails(Class<?> javaClass, ModelProcessingContext processingContext) {
 		return new ClassDetailsImpl( javaClass, processingContext );
 	}
 }

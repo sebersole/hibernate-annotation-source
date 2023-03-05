@@ -1,0 +1,24 @@
+== Boot models
+
+Reworking of how Hibernate processes "managed resources" (classes,XML) and builds its
+`org.hibernate.mapping` metamodel.
+
+=== Goals
+
+This work breaks the process down into a few well-defined stages, with a few goals:
+
+- Move away from reflection - this allows better support for runtime enhancement
+- Facilitate the ability to move away from HCANN (to Jandex)
+- More uniform handling of XML
+- Reduce the need for so many `SecondPass` registrations
+
+=== Approach
+
+I am taking a look at 2 high-level approaches to this in terms of how we model
+the concept of an annotation.  This repo is a proof-of-concept for the approach
+of using a totally de-typed model (similar to the `AnnotationInstance`) approach
+taken by Jandex which makes a move to Jandex trivial.
+
+The other approach is to subclass the annotations.  There, `AnnotationUsage` becomes an
+interface - we would have concrete types for each annotation we deal with.  Not sure how
+non-orm (Hibernate+JPA) annotations would work there.

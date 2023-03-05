@@ -34,16 +34,20 @@ import org.hibernate.boot.models.source.spi.JpaAnnotations;
  */
 public class OrmAnnotationDescriptorImpl<A extends Annotation> implements AnnotationDescriptor<A> {
 	private final Class<A> annotationType;
-	private final List<AnnotationAttributeDescriptor<A,?>> attributeDescriptors;
+	private final List<AnnotationAttributeDescriptor<A,?,?>> attributeDescriptors;
 	private final AnnotationDescriptor<?> repeatableContainer;
+
+	private final boolean inherited;
 
 	public OrmAnnotationDescriptorImpl(
 			Class<A> annotationType,
-			List<AnnotationAttributeDescriptor<A,?>> attributeDescriptors,
+			List<AnnotationAttributeDescriptor<A,?,?>> attributeDescriptors,
 			AnnotationDescriptor<?> repeatableContainer) {
 		this.annotationType = annotationType;
 		this.attributeDescriptors = attributeDescriptors;
 		this.repeatableContainer = repeatableContainer;
+
+		this.inherited = AnnotationHelper.isInherited( annotationType );
 	}
 
 	@Override
@@ -55,25 +59,30 @@ public class OrmAnnotationDescriptorImpl<A extends Annotation> implements Annota
 	 * The {@linkplain Class Java type} of the annotation.
 	 */
 	@Override
-	public Class<? extends Annotation> getAnnotationType() {
+	public Class<A> getAnnotationType() {
 		return annotationType;
+	}
+
+	@Override
+	public boolean isInherited() {
+		return inherited;
 	}
 
 	/**
 	 * Descriptors for the attributes of this annotation
 	 */
 	@Override
-	public List<AnnotationAttributeDescriptor<A,?>> getAttributes() {
+	public List<AnnotationAttributeDescriptor<A,?,?>> getAttributes() {
 		return attributeDescriptors;
 	}
 
 	@Override
-	public <X> AnnotationAttributeDescriptor<A,X> getAttribute(String name) {
+	public <V, W> AnnotationAttributeDescriptor<A, V, W> getAttribute(String name) {
 		for ( int i = 0; i < attributeDescriptors.size(); i++ ) {
-			final AnnotationAttributeDescriptor<A,?> attributeDescriptor = attributeDescriptors.get( i );
+			final AnnotationAttributeDescriptor<A,?,?> attributeDescriptor = attributeDescriptors.get( i );
 			if ( attributeDescriptor.getAttributeName().equals( name ) ) {
 				//noinspection unchecked
-				return (AnnotationAttributeDescriptor<A,X>) attributeDescriptor;
+				return (AnnotationAttributeDescriptor<A,V,W>) attributeDescriptor;
 			}
 		}
 		throw new AnnotationAccessException( "No such attribute : " + annotationType.getName() + "." + name );

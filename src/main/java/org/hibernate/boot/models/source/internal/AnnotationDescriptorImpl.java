@@ -16,7 +16,7 @@ import org.hibernate.boot.models.source.spi.AnnotationDescriptor;
 import org.hibernate.boot.models.source.spi.AnnotationTarget;
 import org.hibernate.boot.models.source.spi.HibernateAnnotations;
 import org.hibernate.boot.models.source.spi.JpaAnnotations;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
  * AnnotationDescriptor used for annotations other than {@linkplain JpaAnnotations JPA}
@@ -31,17 +31,20 @@ public class AnnotationDescriptorImpl<A extends Annotation>
 		extends AbstractAnnotationTarget
 		implements AnnotationDescriptor<A> {
 	private final Class<A> annotationType;
-	private final List<AnnotationAttributeDescriptor<A,?>> attributeDescriptors;
 	private final AnnotationDescriptor<?> repeatableContainer;
+
+	private final boolean inherited;
+	private final List<AnnotationAttributeDescriptor<A,?,?>> attributeDescriptors;
 
 	public AnnotationDescriptorImpl(
 			Class<A> annotationType,
 			AnnotationDescriptor<?> repeatableContainer,
-			AnnotationProcessingContext processingContext) {
+			ModelProcessingContext processingContext) {
 		super( annotationType.getAnnotations(), processingContext );
 		this.annotationType = annotationType;
 		this.repeatableContainer = repeatableContainer;
 
+		this.inherited = AnnotationHelper.isInherited( annotationType );
 		this.attributeDescriptors = AnnotationDescriptorBuilder.extractAttributeDescriptors( annotationType );
 
 		processingContext.getClassDetailsRegistry().resolveManagedClass(
@@ -56,12 +59,17 @@ public class AnnotationDescriptorImpl<A extends Annotation>
 	}
 
 	@Override
-	public Class<? extends Annotation> getAnnotationType() {
+	public Class<A> getAnnotationType() {
 		return annotationType;
 	}
 
 	@Override
-	public List<AnnotationAttributeDescriptor<A,?>> getAttributes() {
+	public boolean isInherited() {
+		return inherited;
+	}
+
+	@Override
+	public List<AnnotationAttributeDescriptor<A,?,?>> getAttributes() {
 		return attributeDescriptors;
 	}
 
@@ -71,12 +79,12 @@ public class AnnotationDescriptorImpl<A extends Annotation>
 	}
 
 	@Override
-	public <X> AnnotationAttributeDescriptor<A,X> getAttribute(String name) {
+	public <V, W> AnnotationAttributeDescriptor<A, V, W> getAttribute(String name) {
 		for ( int i = 0; i < attributeDescriptors.size(); i++ ) {
-			final AnnotationAttributeDescriptor<A,?> attributeDescriptor = attributeDescriptors.get( i );
+			final AnnotationAttributeDescriptor<A,?,?> attributeDescriptor = attributeDescriptors.get( i );
 			if ( attributeDescriptor.getAttributeName().equals( name ) ) {
 				//noinspection unchecked
-				return (AnnotationAttributeDescriptor<A,X>) attributeDescriptor;
+				return (AnnotationAttributeDescriptor<A,V,W>) attributeDescriptor;
 			}
 		}
 		throw new AnnotationAccessException( "No such attribute : " + annotationType.getName() + "." + name );

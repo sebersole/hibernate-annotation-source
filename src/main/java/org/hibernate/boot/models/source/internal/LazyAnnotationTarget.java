@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptor;
 import org.hibernate.boot.models.source.spi.AnnotationTarget;
 import org.hibernate.boot.models.source.spi.AnnotationUsage;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
  * AnnotationTarget where we know the annotations up front, but
@@ -26,29 +26,29 @@ import org.hibernate.boot.models.spi.AnnotationProcessingContext;
  */
 public abstract class LazyAnnotationTarget implements AnnotationTarget {
 	private final Supplier<Annotation[]> annotationSupplier;
-	private final AnnotationProcessingContext processingContext;
+	private final ModelProcessingContext processingContext;
 
 	private Map<Class<? extends Annotation>, AnnotationUsage<?>> usagesMap;
 
 	public LazyAnnotationTarget(
 			Supplier<Annotation[]> annotationSupplier,
-			AnnotationProcessingContext processingContext) {
+			ModelProcessingContext processingContext) {
 		this.annotationSupplier = annotationSupplier;
 		this.processingContext = processingContext;
 	}
 
-	protected AnnotationProcessingContext getProcessingContext() {
+	protected ModelProcessingContext getProcessingContext() {
 		return processingContext;
 	}
 
 	@Override
 	public <A extends Annotation> AnnotationUsage<A> getAnnotation(AnnotationDescriptor<A> type) {
-		return AnnotationHelper.getAnnotation( type, resolveUsagesMap() );
+		return AnnotationWrapperHelper.getAnnotation( type, resolveUsagesMap() );
 	}
 
 	@Override
 	public <A extends Annotation> List<AnnotationUsage<A>> getRepeatedAnnotations(AnnotationDescriptor<A> type) {
-		return AnnotationHelper.getRepeatedAnnotations( type, resolveUsagesMap() );
+		return AnnotationWrapperHelper.getRepeatedAnnotations( type, resolveUsagesMap() );
 	}
 
 	private Map<Class<? extends Annotation>, AnnotationUsage<?>> resolveUsagesMap() {
@@ -60,7 +60,7 @@ public abstract class LazyAnnotationTarget implements AnnotationTarget {
 
 	private Map<Class<? extends Annotation>, AnnotationUsage<?>> buildUsagesMap() {
 		final Map<Class<? extends Annotation>, AnnotationUsage<?>> result = new HashMap<>();
-		AnnotationHelper.processAnnotations(
+		AnnotationUsageBuilder.processAnnotations(
 				annotationSupplier.get(),
 				this,
 				result::put,
@@ -83,6 +83,6 @@ public abstract class LazyAnnotationTarget implements AnnotationTarget {
 			AnnotationDescriptor<A> type,
 			String matchValue,
 			String attributeToMatch) {
-		return AnnotationHelper.getNamedAnnotation( type, matchValue, attributeToMatch, resolveUsagesMap() );
+		return AnnotationWrapperHelper.getNamedAnnotation( type, matchValue, attributeToMatch, resolveUsagesMap() );
 	}
 }

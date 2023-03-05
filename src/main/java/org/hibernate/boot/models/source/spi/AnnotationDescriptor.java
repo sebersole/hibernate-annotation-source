@@ -23,17 +23,22 @@ public interface AnnotationDescriptor<A extends Annotation> extends AnnotationTa
 	/**
 	 * The annotation type
 	 */
-	Class<? extends Annotation> getAnnotationType();
+	Class<A> getAnnotationType();
+
+	/**
+	 * Whether the annotation defined as {@linkplain java.lang.annotation.Inherited inherited}
+	 */
+	boolean isInherited();
 
 	/**
 	 * Descriptors for the attributes of the annotation
 	 */
-	List<AnnotationAttributeDescriptor<A,?>> getAttributes();
+	List<AnnotationAttributeDescriptor<A,?,?>> getAttributes();
 
 	/**
 	 * Get the attribute descriptor for the named attribute
 	 */
-	<X> AnnotationAttributeDescriptor<A,X> getAttribute(String name);
+	<V,W> AnnotationAttributeDescriptor<A,V,W> getAttribute(String name);
 
 	/**
 	 * If the described annotation is repeatable, returns the descriptor

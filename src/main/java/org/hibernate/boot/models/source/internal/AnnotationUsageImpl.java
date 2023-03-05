@@ -17,7 +17,7 @@ import org.hibernate.boot.models.source.spi.AnnotationAttributeValue;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptor;
 import org.hibernate.boot.models.source.spi.AnnotationTarget;
 import org.hibernate.boot.models.source.spi.AnnotationUsage;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 import org.hibernate.internal.util.collections.CollectionHelper;
 
 /**
@@ -27,17 +27,17 @@ public class AnnotationUsageImpl<A extends Annotation> implements AnnotationUsag
 	private final AnnotationDescriptor<A> annotationDescriptor;
 	private final AnnotationTarget location;
 
-	private final Map<String, AnnotationAttributeValue<?>> valueMap;
+	private final Map<String, AnnotationAttributeValue<?,?>> valueMap;
 
 	public AnnotationUsageImpl(
 			A annotation,
 			AnnotationDescriptor<A> annotationDescriptor,
 			AnnotationTarget location,
-			AnnotationProcessingContext processingContext) {
+			ModelProcessingContext processingContext) {
 		this.annotationDescriptor = annotationDescriptor;
 		this.location = location;
 
-		this.valueMap = AnnotationHelper.extractAttributeValues( annotation, annotationDescriptor, processingContext );
+		this.valueMap = AnnotationUsageBuilder.extractAttributeValues( annotation, annotationDescriptor, location, processingContext );
 
 		processingContext.registerUsage( this );
 	}
@@ -45,7 +45,7 @@ public class AnnotationUsageImpl<A extends Annotation> implements AnnotationUsag
 	public AnnotationUsageImpl(
 			AnnotationDescriptor<A> annotationDescriptor,
 			AnnotationTarget location,
-			Map<String, AnnotationAttributeValue<?>> valueMap) {
+			Map<String, AnnotationAttributeValue<?,?>> valueMap) {
 		this.annotationDescriptor = annotationDescriptor;
 		this.location = location;
 		this.valueMap = valueMap;
@@ -54,7 +54,7 @@ public class AnnotationUsageImpl<A extends Annotation> implements AnnotationUsag
 	public AnnotationUsageImpl(
 			AnnotationDescriptor<A> annotationDescriptor,
 			AnnotationTarget location,
-			List<AnnotationAttributeValue<?>> valueList) {
+			List<AnnotationAttributeValue<?,?>> valueList) {
 		this( annotationDescriptor, location, indexValues( valueList ) );
 	}
 
@@ -69,24 +69,24 @@ public class AnnotationUsageImpl<A extends Annotation> implements AnnotationUsag
 	}
 
 	@Override
-	public <X> AnnotationAttributeValue<X> getAttributeValue(String name) {
+	public <V,W> AnnotationAttributeValue<V,W> getAttributeValue(String name) {
 		//noinspection unchecked
-		return (AnnotationAttributeValue<X>) valueMap.get( name );
+		return (AnnotationAttributeValue<V,W>) valueMap.get( name );
 	}
 
 	@Override
-	public <X> AnnotationAttributeValue<X> getAttributeValue(AnnotationAttributeDescriptor<A, X> attributeDescriptor) {
+	public <V,W> AnnotationAttributeValue<V,W> getAttributeValue(AnnotationAttributeDescriptor<A,V,W> attributeDescriptor) {
 		return getAttributeValue( attributeDescriptor.getAttributeName() );
 	}
 
-	private static Map<String, AnnotationAttributeValue<?>> indexValues(List<AnnotationAttributeValue<?>> valueList) {
+	private static Map<String, AnnotationAttributeValue<?,?>> indexValues(List<AnnotationAttributeValue<?,?>> valueList) {
 		if ( CollectionHelper.isEmpty( valueList ) ) {
 			return Collections.emptyMap();
 		}
 
-		final Map<String, AnnotationAttributeValue<?>> result = new HashMap<>();
+		final Map<String, AnnotationAttributeValue<?,?>> result = new HashMap<>();
 		for ( int i = 0; i < valueList.size(); i++ ) {
-			final AnnotationAttributeValue<?> value = valueList.get( i );
+			final AnnotationAttributeValue<?,?> value = valueList.get( i );
 			result.put( value.getAttributeDescriptor().getAttributeName(), value );
 		}
 		return result;

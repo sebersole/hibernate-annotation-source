@@ -10,7 +10,7 @@ import org.hibernate.annotations.common.reflection.XMethod;
 import org.hibernate.boot.models.source.internal.LazyAnnotationTarget;
 import org.hibernate.boot.models.source.spi.ClassDetails;
 import org.hibernate.boot.models.source.spi.MethodDetails;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 import static org.hibernate.boot.models.source.internal.ModifierUtils.isPersistableMethod;
 
@@ -21,7 +21,7 @@ public class MethodDetailsImpl extends LazyAnnotationTarget implements MethodDet
 	private final XMethod xMethod;
 	private final ClassDetails type;
 
-	public MethodDetailsImpl(XMethod xMethod, AnnotationProcessingContext processingContext) {
+	public MethodDetailsImpl(XMethod xMethod, ModelProcessingContext processingContext) {
 		super( xMethod::getAnnotations, processingContext );
 		this.xMethod = xMethod;
 		this.type = processingContext.getClassDetailsRegistry().resolveManagedClass(

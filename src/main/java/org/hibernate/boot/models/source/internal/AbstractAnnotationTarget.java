@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptor;
 import org.hibernate.boot.models.source.spi.AnnotationTarget;
 import org.hibernate.boot.models.source.spi.AnnotationUsage;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
  * Basic support for AnnotationTarget.
@@ -29,18 +29,18 @@ public abstract class AbstractAnnotationTarget implements AnnotationTarget {
 
 	public AbstractAnnotationTarget(
 			Annotation[] annotations,
-			AnnotationProcessingContext processingContext) {
-		AnnotationHelper.processAnnotations( annotations, this, usageMap::put, processingContext );
+			ModelProcessingContext processingContext) {
+		AnnotationUsageBuilder.processAnnotations( annotations, this, usageMap::put, processingContext );
 	}
 
 	@Override
 	public <A extends Annotation> AnnotationUsage<A> getAnnotation(AnnotationDescriptor<A> type) {
-		return AnnotationHelper.getAnnotation( type, usageMap );
+		return AnnotationWrapperHelper.getAnnotation( type, usageMap );
 	}
 
 	@Override
 	public <A extends Annotation> List<AnnotationUsage<A>> getRepeatedAnnotations(AnnotationDescriptor<A> type) {
-		return AnnotationHelper.getRepeatedAnnotations( type, usageMap );
+		return AnnotationWrapperHelper.getRepeatedAnnotations( type, usageMap );
 	}
 
 	@Override
@@ -57,6 +57,6 @@ public abstract class AbstractAnnotationTarget implements AnnotationTarget {
 			AnnotationDescriptor<A> type,
 			String matchValue,
 			String attributeToMatch) {
-		return AnnotationHelper.getNamedAnnotation( type, matchValue, attributeToMatch, usageMap );
+		return AnnotationWrapperHelper.getNamedAnnotation( type, matchValue, attributeToMatch, usageMap );
 	}
 }

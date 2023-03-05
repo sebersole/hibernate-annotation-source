@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.boot.models.source.spi.AnnotationDescriptor;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptorRegistry;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
@@ -24,12 +24,12 @@ import jakarta.persistence.NamedQuery;
  * @author Steve Ebersole
  */
 public class AnnotationDescriptorRegistryImpl implements AnnotationDescriptorRegistry {
-	private final AnnotationProcessingContext context;
+	private final ModelProcessingContext context;
 
 	private final Map<Class<? extends Annotation>, AnnotationDescriptor<?>> descriptorMap = new ConcurrentHashMap<>();
 	private final Map<Class<? extends Annotation>, AnnotationDescriptor<?>> repeatableDescriptorMap = new ConcurrentHashMap<>();
 
-	public AnnotationDescriptorRegistryImpl(AnnotationProcessingContext context) {
+	public AnnotationDescriptorRegistryImpl(ModelProcessingContext context) {
 		this.context = context;
 	}
 

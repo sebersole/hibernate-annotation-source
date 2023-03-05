@@ -7,6 +7,9 @@
 package org.hibernate.boot.models.source.spi;
 
 import java.lang.annotation.Annotation;
+import java.util.function.Supplier;
+
+import org.hibernate.boot.models.source.internal.AnnotationWrapperHelper;
 
 /**
  * Describes the usage of an annotation.  That is, not the
@@ -34,10 +37,22 @@ public interface AnnotationUsage<A extends Annotation> {
 	/**
 	 * The value of the named annotation attribute
 	 */
-	<X> AnnotationAttributeValue<X> getAttributeValue(String name);
+	<V,W> AnnotationAttributeValue<V,W> getAttributeValue(String name);
 
 	/**
 	 * The value of the named annotation attribute
 	 */
-	<X> AnnotationAttributeValue<X> getAttributeValue(AnnotationAttributeDescriptor<A,X> attributeDescriptor);
+	<V,W> AnnotationAttributeValue<V,W> getAttributeValue(AnnotationAttributeDescriptor<A,V,W> attributeDescriptor);
+
+	default <X> X extractAttributeValue(String name) {
+		return AnnotationWrapperHelper.extractValue( this, name );
+	}
+
+	default <X> X extractAttributeValue(String name, X fallback) {
+		return AnnotationWrapperHelper.extractValue( this, name, fallback );
+	}
+
+	default <X> X extractAttributeValue(String name, Supplier<X> fallbackSupplier) {
+		return AnnotationWrapperHelper.extractValue( this, name, fallbackSupplier );
+	}
 }

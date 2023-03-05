@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 import org.hibernate.boot.models.source.internal.hcann.ClassDetailsBuilderImpl;
 import org.hibernate.boot.models.source.UnknownManagedClassException;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
  * Registry of all {@link ClassDetails} references
@@ -23,13 +23,13 @@ import org.hibernate.boot.models.spi.AnnotationProcessingContext;
  * @author Steve Ebersole
  */
 public class ClassDetailsRegistry {
-	private final AnnotationProcessingContext context;
+	private final ModelProcessingContext context;
 
 	private final ClassDetailsBuilder fallbackClassDetailsBuilder;
 	private final Map<String, ClassDetails> managedClassMap = new ConcurrentHashMap<>();
 	private final Map<String, List<ClassDetails>> subTypeManagedClassMap = new ConcurrentHashMap<>();
 
-	public ClassDetailsRegistry(AnnotationProcessingContext context) {
+	public ClassDetailsRegistry(ModelProcessingContext context) {
 		this.context = context;
 		this.fallbackClassDetailsBuilder = new ClassDetailsBuilderImpl( context );
 	}

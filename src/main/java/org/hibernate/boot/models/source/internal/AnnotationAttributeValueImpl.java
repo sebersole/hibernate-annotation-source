@@ -14,22 +14,22 @@ import org.hibernate.boot.models.source.spi.AnnotationAttributeValue;
 /**
  * @author Steve Ebersole
  */
-public class AnnotationAttributeValueImpl<T> implements AnnotationAttributeValue<T> {
-	private final AnnotationAttributeDescriptor<?,T> attributeDescriptor;
-	private final T value;
+public class AnnotationAttributeValueImpl<V,W> implements AnnotationAttributeValue<V,W> {
+	private final AnnotationAttributeDescriptor<?,V,W> attributeDescriptor;
+	private final W value;
 
-	public AnnotationAttributeValueImpl(AnnotationAttributeDescriptor<?,T> attributeDescriptor, T value) {
+	public AnnotationAttributeValueImpl(AnnotationAttributeDescriptor<?,V,W> attributeDescriptor, W value) {
 		this.attributeDescriptor = attributeDescriptor;
 		this.value = value;
 	}
 
 	@Override
-	public AnnotationAttributeDescriptor<?, T> getAttributeDescriptor() {
+	public AnnotationAttributeDescriptor<?,V,W> getAttributeDescriptor() {
 		return attributeDescriptor;
 	}
 
 	@Override
-	public T getValue() {
+	public W getValue() {
 		return value;
 	}
 
@@ -46,6 +46,6 @@ public class AnnotationAttributeValueImpl<T> implements AnnotationAttributeValue
 
 	@Override
 	public boolean isDefaultValue() {
-		return Objects.equals( value, attributeDescriptor.getAttributeDefault() );
+		return value == null || Objects.equals( value, attributeDescriptor.getAttributeDefault() );
 	}
 }

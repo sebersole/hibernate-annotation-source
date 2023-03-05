@@ -9,21 +9,22 @@ package org.hibernate.boot.models.source.spi;
 /**
  * The descriptor for the value of a particular attribute for the annotation usage
  */
-public interface AnnotationAttributeValue<T> {
+public interface AnnotationAttributeValue<V,W> {
 	/**
 	 * Descriptor for the attribute for which this is a value
 	 */
-	AnnotationAttributeDescriptor<?,T> getAttributeDescriptor();
+	AnnotationAttributeDescriptor<?,V,W> getAttributeDescriptor();
 
 	/**
 	 * The value
 	 */
-	T getValue();
+	W getValue();
 
 	<X> X getValue(Class<X> type);
 
 	default String asString() {
-		return getValue().toString();
+		final W value = getValue();
+		return value == null ? null : value.toString();
 	}
 
 	default boolean asBoolean() {

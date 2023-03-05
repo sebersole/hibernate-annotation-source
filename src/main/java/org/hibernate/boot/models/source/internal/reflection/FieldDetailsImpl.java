@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import org.hibernate.boot.models.source.internal.LazyAnnotationTarget;
 import org.hibernate.boot.models.source.spi.ClassDetails;
 import org.hibernate.boot.models.source.spi.FieldDetails;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 import static org.hibernate.boot.models.source.internal.ModifierUtils.isPersistableField;
 
@@ -23,7 +23,7 @@ public class FieldDetailsImpl extends LazyAnnotationTarget implements FieldDetai
 	private final Field field;
 	private final ClassDetails type;
 
-	public FieldDetailsImpl(Field field, AnnotationProcessingContext processingContext) {
+	public FieldDetailsImpl(Field field, ModelProcessingContext processingContext) {
 		super( field::getAnnotations, processingContext );
 		this.field = field;
 		this.type = processingContext.getClassDetailsRegistry().resolveManagedClass(

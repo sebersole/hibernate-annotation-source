@@ -10,7 +10,7 @@ import org.hibernate.annotations.common.reflection.ReflectionManager;
 import org.hibernate.annotations.common.reflection.XClass;
 import org.hibernate.boot.models.source.spi.ClassDetails;
 import org.hibernate.boot.models.source.spi.ClassDetailsBuilder;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
 
 /**
@@ -22,7 +22,7 @@ public class ClassDetailsBuilderImpl implements ClassDetailsBuilder {
 	private final ClassLoaderService classLoaderService;
 	private final ReflectionManager hcannReflectionManager;
 
-	public ClassDetailsBuilderImpl(AnnotationProcessingContext processingContext) {
+	public ClassDetailsBuilderImpl(ModelProcessingContext processingContext) {
 		this.classLoaderService = processingContext.getMetadataBuildingContext()
 				.getBootstrapContext()
 				.getServiceRegistry()
@@ -33,7 +33,7 @@ public class ClassDetailsBuilderImpl implements ClassDetailsBuilder {
 	}
 
 	@Override
-	public ClassDetails buildClassDetails(String name, AnnotationProcessingContext processingContext) {
+	public ClassDetails buildClassDetails(String name, ModelProcessingContext processingContext) {
 		final Class<?> classForName = classLoaderService.classForName( name );
 		final XClass xClassForName = hcannReflectionManager.toXClass( classForName );
 		return new ClassDetailsImpl( xClassForName, processingContext );

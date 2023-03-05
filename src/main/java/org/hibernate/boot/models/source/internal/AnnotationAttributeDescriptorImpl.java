@@ -12,39 +12,68 @@ import java.lang.reflect.Method;
 
 import org.hibernate.boot.models.source.AnnotationAccessException;
 import org.hibernate.boot.models.source.spi.AnnotationAttributeDescriptor;
+import org.hibernate.boot.models.source.spi.AnnotationAttributeValue;
+import org.hibernate.boot.models.source.spi.AnnotationTarget;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
+ * Specialized AnnotationAttributeDescriptor impl for String attributes
+ *
  * @author Steve Ebersole
  */
-public class AnnotationAttributeDescriptorImpl<A extends Annotation,T> implements AnnotationAttributeDescriptor<A,T> {
-	private final Method valueMethod;
+public class AnnotationAttributeDescriptorImpl<A extends Annotation,V,W> implements AnnotationAttributeDescriptor<A,V,W> {
+	private final Method attributeMethod;
+	private final ValueNormalizer<V,W> valueNormalizer;
 
-	public AnnotationAttributeDescriptorImpl(Method valueMethod) {
-		this.valueMethod = valueMethod;
+	public AnnotationAttributeDescriptorImpl(Method attributeMethod) {
+		//noinspection unchecked
+		this( attributeMethod, (ValueNormalizer<V, W>) PassThroughNormalizer.singleton() );
 	}
 
-	public String getAttributeName() {
-		return valueMethod.getName();
-	}
-
-	@SuppressWarnings("unchecked")
-	public Class<T> getAttributeType() {
-		return (Class<T>) valueMethod.getReturnType();
-	}
-
-	@SuppressWarnings("unchecked")
-	public T getAttributeDefault() {
-		return (T) valueMethod.getDefaultValue();
+	public AnnotationAttributeDescriptorImpl(Method attributeMethod, ValueNormalizer<V,W> valueNormalizer) {
+		this.attributeMethod = attributeMethod;
+		this.valueNormalizer = valueNormalizer;
 	}
 
 	@Override
-	public T extractRawValue(Annotation annotation) {
+	public Method getAttributeMethod() {
+		return attributeMethod;
+	}
+
+	@Override
+	public String getAttributeName() {
+		return attributeMethod.getName();
+	}
+
+	@Override
+	public Class<V> getAttributeType() {
+		//noinspection unchecked
+		return (Class<V>) attributeMethod.getReturnType();
+	}
+
+	@Override
+	public V getAttributeDefault() {
+		//noinspection unchecked
+		return (V) attributeMethod.getDefaultValue();
+	}
+
+	@Override
+	public V extractValue(A annotation) {
 		try {
 			//noinspection unchecked
-			return (T) valueMethod.invoke( annotation );
+			return (V) attributeMethod.invoke( annotation );
 		}
 		catch (IllegalAccessException | InvocationTargetException e) {
 			throw new AnnotationAccessException( "Unable to extract annotation attribute value", e );
 		}
 	}
+
+	@Override
+	public AnnotationAttributeValue<V, W> makeValueWrapper(
+			V value,
+			AnnotationTarget target,
+			ModelProcessingContext processingContext) {
+		return new AnnotationAttributeValueImpl<>( this, valueNormalizer.normalize( value, target, processingContext ) );
+	}
+
 }

@@ -10,7 +10,7 @@ import org.hibernate.annotations.common.reflection.XProperty;
 import org.hibernate.boot.models.source.internal.LazyAnnotationTarget;
 import org.hibernate.boot.models.source.spi.ClassDetails;
 import org.hibernate.boot.models.source.spi.FieldDetails;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 import static org.hibernate.boot.models.source.internal.ModifierUtils.isPersistableField;
 
@@ -22,7 +22,7 @@ public class FieldDetailsImpl extends LazyAnnotationTarget implements FieldDetai
 	private final XProperty xProperty;
 	private final ClassDetails type;
 
-	public FieldDetailsImpl(XProperty xProperty, AnnotationProcessingContext processingContext) {
+	public FieldDetailsImpl(XProperty xProperty, ModelProcessingContext processingContext) {
 		super( xProperty::getAnnotations, processingContext );
 		this.xProperty = xProperty;
 		this.type = processingContext.getClassDetailsRegistry().resolveManagedClass(

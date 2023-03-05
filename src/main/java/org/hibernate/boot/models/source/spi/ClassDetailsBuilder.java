@@ -6,7 +6,7 @@
  */
 package org.hibernate.boot.models.source.spi;
 
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
  * Contract for creating the ClassDetails for a Java type we have not yet seen
@@ -19,5 +19,5 @@ public interface ClassDetailsBuilder {
 	/**
 	 * Build a ClassDetails descriptor for a class with the given name
 	 */
-	ClassDetails buildClassDetails(String name, AnnotationProcessingContext processingContext);
+	ClassDetails buildClassDetails(String name, ModelProcessingContext processingContext);
 }

@@ -19,7 +19,7 @@ import org.hibernate.boot.models.source.spi.ClassDetails;
 import org.hibernate.boot.models.source.spi.ClassDetailsRegistry;
 import org.hibernate.boot.models.source.spi.FieldDetails;
 import org.hibernate.boot.models.source.spi.MethodDetails;
-import org.hibernate.boot.models.spi.AnnotationProcessingContext;
+import org.hibernate.boot.models.spi.ModelProcessingContext;
 import org.hibernate.internal.util.IndexedConsumer;
 import org.hibernate.internal.util.collections.ArrayHelper;
 import org.hibernate.internal.util.collections.CollectionHelper;
@@ -41,14 +41,14 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 
 	public ClassDetailsImpl(
 			Class<?> managedClass,
-			AnnotationProcessingContext processingContext) {
+			ModelProcessingContext processingContext) {
 		this( managedClass.getName(), managedClass, processingContext );
 	}
 
 	public ClassDetailsImpl(
 			String name,
 			Class<?> managedClass,
-			AnnotationProcessingContext processingContext) {
+			ModelProcessingContext processingContext) {
 		super( managedClass::getDeclaredAnnotations, processingContext );
 		this.name = name;
 		this.managedClass = managedClass;
