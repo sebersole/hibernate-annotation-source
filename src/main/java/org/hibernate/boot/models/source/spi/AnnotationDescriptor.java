@@ -7,6 +7,7 @@
 package org.hibernate.boot.models.source.spi;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.util.List;
 
 /**
@@ -41,8 +42,8 @@ public interface AnnotationDescriptor<A extends Annotation> extends AnnotationTa
 	<V,W> AnnotationAttributeDescriptor<A,V,W> getAttribute(String name);
 
 	/**
-	 * If the described annotation is repeatable, returns the descriptor
-	 * for the annotation which is the repeatable container
+	 * If the described annotation is {@linkplain Repeatable repeatable}, returns the descriptor
+	 * for the {@linkplain Repeatable#value() container} annotation.
 	 */
 	AnnotationDescriptor<?> getRepeatableContainer();
 }

@@ -8,6 +8,7 @@ package org.hibernate.boot.models.source.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.boot.models.source.AnnotationAccessException;
 import org.hibernate.boot.models.source.internal.reflection.ClassDetailsBuilderImpl;
@@ -88,5 +89,22 @@ public class AnnotationDescriptorImpl<A extends Annotation>
 			}
 		}
 		throw new AnnotationAccessException( "No such attribute : " + annotationType.getName() + "." + name );
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( o == null || getClass() != o.getClass() ) {
+			return false;
+		}
+		final AnnotationDescriptorImpl<?> that = (AnnotationDescriptorImpl<?>) o;
+		return annotationType.equals( that.annotationType );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( annotationType );
 	}
 }

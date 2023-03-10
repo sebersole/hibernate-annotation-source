@@ -27,17 +27,17 @@ public class AnnotationDescriptorRegistryImpl implements AnnotationDescriptorReg
 	private final ModelProcessingContext context;
 
 	private final Map<Class<? extends Annotation>, AnnotationDescriptor<?>> descriptorMap = new ConcurrentHashMap<>();
-	private final Map<Class<? extends Annotation>, AnnotationDescriptor<?>> repeatableDescriptorMap = new ConcurrentHashMap<>();
+	private final Map<AnnotationDescriptor<?>, AnnotationDescriptor<?>> repeatableByContainerMap = new ConcurrentHashMap<>();
 
 	public AnnotationDescriptorRegistryImpl(ModelProcessingContext context) {
 		this.context = context;
 	}
 
-	public void register(AnnotationDescriptor<?> descriptor) {
+	void register(AnnotationDescriptor<?> descriptor) {
 		descriptorMap.put( descriptor.getAnnotationType(), descriptor );
 		if ( descriptor.getRepeatableContainer() != null ) {
 			// the descriptor is repeatable - register it under its container
-			repeatableDescriptorMap.put( descriptor.getRepeatableContainer().getAnnotationType(), descriptor );
+			repeatableByContainerMap.put( descriptor.getRepeatableContainer(), descriptor );
 		}
 	}
 
@@ -53,15 +53,13 @@ public class AnnotationDescriptorRegistryImpl implements AnnotationDescriptorReg
 			return existing;
 		}
 
-		// indicates a non-JPA and non-Hibernate annotation.  we need to track
-		// these for meta-annotation handling later.
-		// todo (annotation-source) : should we limit this to just JPA and Hibernate annotations?
+		// indicates a non-JPA and non-Hibernate annotation.  we need to track these for meta-annotation handling later.
 		final AnnotationDescriptor<A> created = createAdHocAnnotationDescriptor( javaType );
 		descriptorMap.put( javaType, created );
 		return created;
 	}
 
-	public  <A extends Annotation> AnnotationDescriptor<A> createAdHocAnnotationDescriptor(Class<A> javaType) {
+	private <A extends Annotation> AnnotationDescriptor<A> createAdHocAnnotationDescriptor(Class<A> javaType) {
 		final Repeatable repeatable = javaType.getAnnotation( Repeatable.class );
 		final AnnotationDescriptor<? extends Annotation> containerDescriptor;
 		if ( repeatable != null ) {
@@ -76,27 +74,24 @@ public class AnnotationDescriptorRegistryImpl implements AnnotationDescriptorReg
 	}
 
 	/**
-	 * For the given annotation type, which is the container for repeatable
-	 * annotations, get the descriptor for the repeatable annotation.
+	 * Returns the descriptor of the {@linkplain Repeatable repeatable} annotation
+	 * {@linkplain AnnotationDescriptor#getRepeatableContainer contained} by the given
+	 * {@code containerDescriptor}. For example, calling this method with
+	 * {@link NamedQueries} would return the descriptor for {@link NamedQuery}.
 	 * <p/>
-	 * E.g., given {@link NamedQuery} and {@link NamedQueries} passing in
-	 * {@code NamedQueries.class} would return the descriptor for {@code NamedQuery}.
+	 * It is the logical inverse of {@link AnnotationDescriptor#getRepeatableContainer}.
 	 */
 	@Override
-	public <A extends Annotation> AnnotationDescriptor<A> getRepeatableDescriptor(AnnotationDescriptor<?> descriptor) {
-		return getRepeatableDescriptor( descriptor.getAnnotationType() );
+	public <A extends Annotation> AnnotationDescriptor<A> getContainedRepeatableDescriptor(AnnotationDescriptor<A> containerDescriptor) {
+		//noinspection unchecked
+		return (AnnotationDescriptor<A>) repeatableByContainerMap.get( containerDescriptor );
 	}
 
 	/**
-	 * For the given annotation type, which is the container for repeatable
-	 * annotations, get the descriptor for the repeatable annotation.
-	 * <p/>
-	 * E.g., given {@link NamedQuery} and {@link NamedQueries} passing in
-	 * {@code NamedQueries.class} would return the descriptor for {@code NamedQuery}.
+	 * @see #getContainedRepeatableDescriptor
 	 */
 	@Override
-	public <A extends Annotation> AnnotationDescriptor<A> getRepeatableDescriptor(Class<?> javaType) {
-		//noinspection unchecked
-		return (AnnotationDescriptor<A>) repeatableDescriptorMap.get( javaType );
+	public <A extends Annotation> AnnotationDescriptor<A> getContainedRepeatableDescriptor(Class<A> containerJavaType) {
+		return getContainedRepeatableDescriptor( getDescriptor( containerJavaType ) );
 	}
 }

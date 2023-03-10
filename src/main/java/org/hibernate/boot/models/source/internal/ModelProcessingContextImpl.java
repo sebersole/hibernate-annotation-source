@@ -59,7 +59,7 @@ public class ModelProcessingContextImpl implements ModelProcessingContext {
 	public ModelProcessingContextImpl(MetadataBuildingContext buildingContext) {
 		this.buildingContext = buildingContext;
 		this.descriptorRegistry = new AnnotationDescriptorRegistryImpl( this );
-		this.classDetailsRegistry = new ClassDetailsRegistry( this );
+		this.classDetailsRegistry = new ClassDetailsRegistryImpl( this );
 		
 		AnnotationWrapperHelper.forEachOrmAnnotation( (annotationDescriptor) -> {
 			descriptorRegistry.register( annotationDescriptor );
@@ -131,7 +131,7 @@ public class ModelProcessingContextImpl implements ModelProcessingContext {
 	}
 
 	@Override
-	public void registerUsage(AnnotationUsage<?> usage) {
+	public void registerUsage(AnnotationUsage<? extends Annotation> usage) {
 		// todo (annotation-source) : we only care about this in specific cases.
 		//		this feeds a Map used to locate annotations regardless of target.
 		//		this is used when locating "global" annotations such as generators,
@@ -147,7 +147,7 @@ public class ModelProcessingContextImpl implements ModelProcessingContext {
 		// and they will get registered themselves
 
 		final AnnotationDescriptor<?> incomingUsageDescriptor = usage.getAnnotationDescriptor();
-		final AnnotationDescriptor<Annotation> repeatableDescriptor = descriptorRegistry.getRepeatableDescriptor( incomingUsageDescriptor );
+		final AnnotationDescriptor<? extends Annotation> repeatableDescriptor = descriptorRegistry.getContainedRepeatableDescriptor( incomingUsageDescriptor );
 		if ( repeatableDescriptor != null ) {
 			// the incoming value is a usage of a "repeatable container", skip the registration
 			return;
@@ -169,7 +169,7 @@ public class ModelProcessingContextImpl implements ModelProcessingContext {
 
 	@Override
 	public <A extends Annotation> List<AnnotationUsage<A>> getAllUsages(AnnotationDescriptor<A> annotationDescriptor) {
-		final AnnotationDescriptor<Annotation> repeatableDescriptor = descriptorRegistry.getRepeatableDescriptor( annotationDescriptor );
+		final AnnotationDescriptor<? extends Annotation> repeatableDescriptor = descriptorRegistry.getContainedRepeatableDescriptor( annotationDescriptor );
 		if ( repeatableDescriptor != null ) {
 			throw new HibernateException( "Annotations which are repeatable-containers are not supported" );
 		}

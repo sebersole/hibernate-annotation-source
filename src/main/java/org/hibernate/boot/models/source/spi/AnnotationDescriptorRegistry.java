@@ -9,12 +9,24 @@ package org.hibernate.boot.models.source.spi;
 import java.lang.annotation.Annotation;
 
 /**
+ * Registry of {@linkplain AnnotationDescriptor descriptors} for all known annotations
+ *
  * @author Steve Ebersole
  */
 public interface AnnotationDescriptorRegistry {
+	/**
+	 * Get the descriptor for the given annotation {@code type}
+	 */
 	<A extends Annotation> AnnotationDescriptor<A> getDescriptor(Class<A> javaType);
 
-	<A extends Annotation> AnnotationDescriptor<A> getRepeatableDescriptor(AnnotationDescriptor<?> descriptor);
+	/**
+	 * Assuming the {@code descriptor} is a {@linkplain AnnotationDescriptor#getRepeatableContainer() repeatable container},
+	 * return the descriptor of the annotation for which it acts as a container.
+	 */
+	<A extends Annotation> AnnotationDescriptor<A> getContainedRepeatableDescriptor(AnnotationDescriptor<A> descriptor);
 
-	<A extends Annotation> AnnotationDescriptor<A> getRepeatableDescriptor(Class<?> javaType);
+	/**
+	 * Shorthand for {@code getRepeatableDescriptor( getDescriptor( javaType ) )}
+	 */
+	<A extends Annotation> AnnotationDescriptor<A> getContainedRepeatableDescriptor(Class<A> javaType);
 }

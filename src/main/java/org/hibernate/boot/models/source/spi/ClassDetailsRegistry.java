@@ -6,105 +6,77 @@
  */
 package org.hibernate.boot.models.source.spi;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.hibernate.boot.models.source.internal.hcann.ClassDetailsBuilderImpl;
 import org.hibernate.boot.models.source.UnknownManagedClassException;
-import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
  * Registry of all {@link ClassDetails} references
  *
  * @author Steve Ebersole
  */
-public class ClassDetailsRegistry {
-	private final ModelProcessingContext context;
+public interface ClassDetailsRegistry {
+	/**
+	 * Find the managed-class with the given {@code name}, if there is one.
+	 * Returns {@code null} if there are none registered with that name.
+	 */
+	ClassDetails findManagedClass(String name);
 
-	private final ClassDetailsBuilder fallbackClassDetailsBuilder;
-	private final Map<String, ClassDetails> managedClassMap = new ConcurrentHashMap<>();
-	private final Map<String, List<ClassDetails>> subTypeManagedClassMap = new ConcurrentHashMap<>();
+	/**
+	 * Form of {@link #findManagedClass} throwing an exception if no registration is found
+	 *
+	 * @throws UnknownManagedClassException If no registration is found with the given {@code name}
+	 */
+	ClassDetails getManagedClass(String name);
 
-	public ClassDetailsRegistry(ModelProcessingContext context) {
-		this.context = context;
-		this.fallbackClassDetailsBuilder = new ClassDetailsBuilderImpl( context );
-	}
+	/**
+	 * Visit each registered managed-class
+	 */
+	void forEachManagedClass(Consumer<ClassDetails> consumer);
 
-	public ClassDetails findManagedClass(String name) {
-		return managedClassMap.get( name );
-	}
+	/**
+	 * Get the list of all direct subtypes for the named managed-class.  Returns
+	 * {@code null} if there are none
+	 */
+	List<ClassDetails> getDirectSubTypes(String superTypeName);
 
-	public ClassDetails getManagedClass(String name) {
-		final ClassDetails named = managedClassMap.get( name );
-		if ( named == null ) {
-			throw new UnknownManagedClassException( "Unknown managed class" );
-		}
-		return named;
-	}
+	/**
+	 * Visit each direct subtype of the named managed-class
+	 */
+	void forEachDirectSubType(String superTypeName, Consumer<ClassDetails> consumer);
 
-	public void forEachManagedClass(Consumer<ClassDetails> consumer) {
-		managedClassMap.values().forEach( consumer );
-	}
+	/**
+	 * Adds a managed-class descriptor using its {@linkplain ClassDetails#getName() name}
+	 * as the registration key.
+	 */
+	void addManagedClass(ClassDetails classDetails);
 
-	public List<ClassDetails> getDirectSubTypes(String superTypeName) {
-		return subTypeManagedClassMap.get( superTypeName );
-	}
+	/**
+	 * Adds a managed-class descriptor using the given {@code name} as the registration key
+	 */
+	void addManagedClass(String name, ClassDetails classDetails);
 
-	public void forEachDirectSubType(String superTypeName, Consumer<ClassDetails> consumer) {
-		final List<ClassDetails> directSubTypes = getDirectSubTypes( superTypeName );
-		if ( directSubTypes != null ) {
-			directSubTypes.forEach( consumer );
-		}
-	}
+	/**
+	 * Resolves a managed-class by name.  If there is currently no such registration,
+	 * one is created.
+	 */
+	ClassDetails resolveManagedClass(String name);
 
-	public void addManagedClass(ClassDetails classDetails) {
-		addManagedClass( classDetails.getClassName(), classDetails );
-	}
-
-	public void addManagedClass(String name, ClassDetails classDetails) {
-		managedClassMap.put( name, classDetails );
-
-		if ( classDetails.getSuperType() != null ) {
-			List<ClassDetails> subTypes = subTypeManagedClassMap.get( classDetails.getSuperType().getName() );
-			if ( subTypes == null ) {
-				subTypes = new ArrayList<>();
-				subTypeManagedClassMap.put( classDetails.getSuperType().getName(), subTypes );
-			}
-			subTypes.add( classDetails );
-		}
-	}
-
-	public ClassDetails resolveManagedClass(String name) {
-		return resolveManagedClass( name, fallbackClassDetailsBuilder );
-	}
-
-	public ClassDetails resolveManagedClass(
+	/**
+	 * Resolves a managed-class by name.  If there is currently no such registration,
+	 * one is created using the specified {@code creator}.
+	 */
+	ClassDetails resolveManagedClass(
 			String name,
-			ClassDetailsBuilder creator) {
-		final ClassDetails existing = managedClassMap.get( name );
-		if ( existing != null ) {
-			return existing;
-		}
+			ClassDetailsBuilder creator);
 
-		final ClassDetails created = creator.buildClassDetails( name, context );
-		addManagedClass( name, created );
-		return created;
-	}
-
-	public ClassDetails resolveManagedClass(
+	/**
+	 * Resolves a managed-class by name.  If there is currently no such registration,
+	 * one is created using the specified {@code creator}.
+	 */
+	ClassDetails resolveManagedClass(
 			String name,
-			Supplier<ClassDetails> creator) {
-		final ClassDetails existing = managedClassMap.get( name );
-		if ( existing != null ) {
-			return existing;
-		}
-
-		final ClassDetails created = creator.get();
-		addManagedClass( name, created );
-		return created;
-	}
+			Supplier<ClassDetails> creator);
 }

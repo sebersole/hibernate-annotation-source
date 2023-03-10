@@ -18,7 +18,7 @@ import org.hibernate.boot.models.source.internal.AnnotationWrapperHelper;
  * allowable {@linkplain AnnotationTarget targets}.
  *
  * @apiNote Abstracts the underlying source of the annotation information,
- * whether that is the {@linkplain Annotation annotation} itself, Jandex,
+ * whether that is the {@linkplain Annotation annotation} itself, JAXB, Jandex,
  * HCANN, etc.
  *
  * @author Steve Ebersole
