@@ -32,7 +32,7 @@ import static org.hibernate.boot.models.spi.ModelSourceLogging.MODEL_SOURCE_LOGG
 
 /**
  * Builds {@link EntityHierarchy} references from
- * {@linkplain ClassDetailsRegistry#forEachManagedClass managed classes}.
+ * {@linkplain ClassDetailsRegistry#forEachClassDetails managed classes}.
  *
  * @author Steve Ebersole
  */
@@ -175,7 +175,7 @@ public class EntityHierarchyBuilder {
 		// todo (annotation-source) : have this handle other types such as converters, etc
 
 		final ClassDetailsRegistry classDetailsRegistry = processingContext.getClassDetailsRegistry();
-		classDetailsRegistry.forEachManagedClass( (managedType) -> {
+		classDetailsRegistry.forEachClassDetails( (managedType) -> {
 			if ( managedType.getAnnotation( JpaAnnotations.MAPPED_SUPERCLASS ) != null ) {
 				allKnownMappedSuperclassTypes.add( managedType );
 			}

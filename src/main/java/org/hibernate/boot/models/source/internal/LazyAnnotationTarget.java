@@ -85,4 +85,6 @@ public abstract class LazyAnnotationTarget implements AnnotationTarget {
 			String attributeToMatch) {
 		return AnnotationWrapperHelper.getNamedAnnotation( type, matchValue, attributeToMatch, resolveUsagesMap() );
 	}
+
+
 }

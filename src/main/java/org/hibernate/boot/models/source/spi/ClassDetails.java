@@ -6,28 +6,22 @@
  */
 package org.hibernate.boot.models.source.spi;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.function.BiConsumer;
 
+import org.hibernate.boot.models.source.internal.ClassDetailsHelper;
 import org.hibernate.internal.util.IndexedConsumer;
 
-import jakarta.persistence.spi.PersistenceUnitInfo;
-
 /**
- * A descriptor for "special classes" that Hibernate knows about through various means -
- * entities, embeddables, mapped-superclasses, attribute-converters, listeners, etc
+ * Abstraction for what Hibernate understands about a "class", generally before it has access to
+ * the actual {@link Class} reference, if there is a {@code Class} at all (dynamic models).
  *
- * Models a {@linkplain PersistenceUnitInfo#getManagedClassNames() "managed class"},
- * but in the larger sense for all the "special classes" we know about -
- * entities, embeddables, mapped-superclasses, attribute-converters, listeners, etc
- * <p/>
+ * @see ClassDetailsRegistry
  *
  * @author Steve Ebersole
  */
 public interface ClassDetails extends AnnotationTarget {
 	/**
-	 * The name of the managed class.
+	 * The name of the class.
 	 * <p/>
 	 * Generally this is the same as the {@linkplain #getClassName() class name}.
 	 * But in the case of Hibernate's {@code entity-name} feature, this would
@@ -36,7 +30,7 @@ public interface ClassDetails extends AnnotationTarget {
 	String getName();
 
 	/**
-	 * The name of the {@link Class} of this managed-type.
+	 * The name of the {@link Class}, or {@code null} for dynamic models.
 	 *
 	 * @apiNote Will be {@code null} for dynamic models
 	 */
@@ -47,29 +41,33 @@ public interface ClassDetails extends AnnotationTarget {
 		return Kind.CLASS;
 	}
 
+	/**
+	 * Whether the class should be considered abstract.
+	 */
 	boolean isAbstract();
 
+	/**
+	 * Details for the class that is the super type for this class.
+	 */
 	ClassDetails getSuperType();
 
+	/**
+	 * Details for the interfaces this class implements.
+	 */
 	List<ClassDetails> getImplementedInterfaceTypes();
 
-	default boolean implementsInterface(Class<?> interfaceJavaType) {
-		return implementsInterface( interfaceJavaType.getName() );
+	/**
+	 * Whether the described class is an implementor of the given {@code checkType}.
+	 */
+	default boolean isImplementor(Class<?> checkType) {
+		return ClassDetailsHelper.isImplementor( checkType, this );
 	}
 
-	default boolean implementsInterface(ClassDetails interfaceType) {
-		return implementsInterface( interfaceType.getClassName() );
-	}
-
-	default boolean implementsInterface(String interfaceTypeName) {
-		final List<ClassDetails> implementedInterfaceTypes = getImplementedInterfaceTypes();
-		for ( int i = 0; i < implementedInterfaceTypes.size(); i++ ) {
-			final ClassDetails implementedInterfaceType = implementedInterfaceTypes.get( i );
-			if ( implementedInterfaceType.getClassName().equals( interfaceTypeName ) ) {
-				return true;
-			}
-		}
-		return false;
+	/**
+	 * Whether the described class is an implementor of the given {@code checkType}.
+	 */
+	default boolean isImplementor(ClassDetails checkType) {
+		return ClassDetailsHelper.isImplementor( checkType, this );
 	}
 
 	/**
@@ -92,27 +90,8 @@ public interface ClassDetails extends AnnotationTarget {
 	 */
 	void forEachMethod(IndexedConsumer<MethodDetails> consumer);
 
-	default <A extends Annotation> void forEachAnnotatedField(
-			AnnotationDescriptor<A> annotation,
-			BiConsumer<FieldDetails, AnnotationUsage<A>> consumer) {
-		forEachField( (index, fieldDetails) -> {
-			final AnnotationUsage<A> usage = fieldDetails.getAnnotation( annotation );
-			if ( usage != null ) {
-				consumer.accept( fieldDetails, usage );
-			}
-		} );
-	}
-
-	default <A extends Annotation> void forEachAnnotatedMethod(
-			AnnotationDescriptor<A> annotation,
-			BiConsumer<MethodDetails, AnnotationUsage<A>> consumer) {
-		forEachMethod( (index, methodDetails) -> {
-			final AnnotationUsage<A> usage = methodDetails.getAnnotation( annotation );
-			if ( usage != null ) {
-				consumer.accept( methodDetails, usage );
-			}
-		} );
-	}
-
+	/**
+	 * Know what you are doing before calling this method
+	 */
 	<X> Class<X> toJavaClass();
 }

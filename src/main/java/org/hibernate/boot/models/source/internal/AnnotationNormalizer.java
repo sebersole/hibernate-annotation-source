@@ -14,6 +14,8 @@ import org.hibernate.boot.models.source.spi.AnnotationUsage;
 import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
+ * ValueNormalizer for handling {@link Annotation} values
+ *
  * @author Steve Ebersole
  */
 public class AnnotationNormalizer<A extends Annotation> implements ValueNormalizer<A, AnnotationUsage<A>> {
@@ -23,7 +25,10 @@ public class AnnotationNormalizer<A extends Annotation> implements ValueNormaliz
 	@SuppressWarnings("rawtypes")
 	public static final AnnotationNormalizer INSTANCE = new AnnotationNormalizer();
 
-	public static <A extends Annotation> ValueNormalizer<A, AnnotationUsage<A>> singleton() { return INSTANCE; }
+	public static <A extends Annotation> ValueNormalizer<A, AnnotationUsage<A>> singleton() {
+		//noinspection unchecked
+		return INSTANCE;
+	}
 
 	@Override
 	public AnnotationUsage<A> normalize(

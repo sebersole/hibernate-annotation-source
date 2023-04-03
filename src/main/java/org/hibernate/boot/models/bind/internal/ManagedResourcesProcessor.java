@@ -220,13 +220,13 @@ public class ManagedResourcesProcessor {
 	 * </ol>>
 	 */
 	private void prepareManagedResources(ManagedResources managedResources) {
-		final ClassDetails attributeConverterClassDetails = classDetailsRegistry.resolveManagedClass(
+		final ClassDetails attributeConverterClassDetails = classDetailsRegistry.resolveClassDetails(
 				AttributeConverter.class.getName(),
 				() -> new ClassDetailsImpl( AttributeConverter.class, processingContext )
 		);
 
 		for ( Class<?> managedClassReference : managedResources.getAnnotatedClassReferences() ) {
-			final ClassDetails classDetails = classDetailsRegistry.resolveManagedClass( managedClassReference.getName() );
+			final ClassDetails classDetails = classDetailsRegistry.resolveClassDetails( managedClassReference.getName() );
 			// if the Class is a converter, register it
 			if ( isConverter( classDetails, attributeConverterClassDetails ) ) {
 				//noinspection unchecked
@@ -238,7 +238,7 @@ public class ManagedResourcesProcessor {
 		}
 
 		for ( String managedClassName : managedResources.getAnnotatedClassNames() ) {
-			final ClassDetails classDetails = classDetailsRegistry.resolveManagedClass( managedClassName );
+			final ClassDetails classDetails = classDetailsRegistry.resolveClassDetails( managedClassName );
 			// if the Class is a converter, register it
 			if ( isConverter( classDetails, attributeConverterClassDetails ) ) {
 				converterRegistry.addAttributeConverter( classDetails.toJavaClass() );
@@ -268,7 +268,7 @@ public class ManagedResourcesProcessor {
 
 	private static boolean isConverter(ClassDetails classDetails, ClassDetails attributeConverterClassDetails) {
 		return classDetails.getAnnotation( JpaAnnotations.CONVERTER ) != null
-				|| classDetails.implementsInterface( attributeConverterClassDetails );
+				|| classDetails.isImplementor( attributeConverterClassDetails );
 	}
 
 	private void finishUp() {

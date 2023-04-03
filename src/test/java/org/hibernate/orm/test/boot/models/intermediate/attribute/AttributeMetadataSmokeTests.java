@@ -142,7 +142,7 @@ public class AttributeMetadataSmokeTests {
 
 		final ClassDetails stringDescriptor = processingContext
 				.getClassDetailsRegistry()
-				.getManagedClass( String.class.getName() );
+				.getClassDetails( String.class.getName() );
 
 		final EntityHierarchy entityHierarchy = entityHierarchies.iterator().next();
 		final EntityTypeMetadata containerDescriptor = entityHierarchy.getRoot();
@@ -202,13 +202,13 @@ public class AttributeMetadataSmokeTests {
 
 		final ClassDetails integerDescriptor = processingContext
 				.getClassDetailsRegistry()
-				.getManagedClass( Integer.class.getName() );
+				.getClassDetails( Integer.class.getName() );
 		final ClassDetails mapDescriptor = processingContext
 				.getClassDetailsRegistry()
-				.getManagedClass( Map.class.getName() );
+				.getClassDetails( Map.class.getName() );
 		final ClassDetails collectionDescriptor = processingContext
 				.getClassDetailsRegistry()
-				.getManagedClass( Collection.class.getName() );
+				.getClassDetails( Collection.class.getName() );
 
 		final Set<EntityHierarchy> hierarchies = ModelHelper.buildHierarchies( processingContext, CollectionsAsBasicEntity.class );
 		assertThat( hierarchies ).hasSize( 1 );

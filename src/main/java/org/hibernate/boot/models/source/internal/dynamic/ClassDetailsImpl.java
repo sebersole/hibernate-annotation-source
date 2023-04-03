@@ -40,7 +40,7 @@ public class ClassDetailsImpl extends AbstractDynamicAnnotationTarget implements
 		this.className = className;
 		this.superType = superType;
 
-		processingContext.getClassDetailsRegistry().addManagedClass( name, this );
+		processingContext.getClassDetailsRegistry().addClassDetails( name, this );
 	}
 
 	@Override

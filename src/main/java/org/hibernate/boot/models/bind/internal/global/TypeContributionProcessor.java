@@ -37,7 +37,6 @@ import org.hibernate.resource.beans.internal.FallbackBeanInstanceProducer;
 import org.hibernate.type.descriptor.java.JavaType;
 import org.hibernate.type.descriptor.jdbc.JdbcType;
 
-import static org.hibernate.boot.models.source.internal.AnnotationWrapperHelper.extractValue;
 import static org.hibernate.boot.models.source.spi.AnnotationAttributeDescriptor.VALUE;
 import static org.hibernate.boot.models.source.spi.HibernateAnnotations.COLLECTION_TYPE_REG;
 import static org.hibernate.boot.models.source.spi.HibernateAnnotations.COMPOSITE_TYPE_REG;
@@ -121,8 +120,8 @@ public class TypeContributionProcessor {
 		}
 
 		registrations.forEach( (reg) -> {
-			final ClassDetails domainClass = classDetailsRegistry.resolveManagedClass( reg.getClazz() );
-			final ClassDetails descriptorClassDetails = classDetailsRegistry.resolveManagedClass( reg.getDescriptor() );
+			final ClassDetails domainClass = classDetailsRegistry.resolveClassDetails( reg.getClazz() );
+			final ClassDetails descriptorClassDetails = classDetailsRegistry.resolveClassDetails( reg.getDescriptor() );
 			final JavaType<?> descriptor = FallbackBeanInstanceProducer.INSTANCE.produceBeanInstance( descriptorClassDetails.toJavaClass() );
 
 			metadataCollector.addJavaTypeRegistration( domainClass.toJavaClass(), descriptor );
@@ -150,7 +149,7 @@ public class TypeContributionProcessor {
 
 		registrations.forEach( (reg) -> {
 			final Integer code = reg.getCode();
-			final ClassDetails descriptorClassDetails = classDetailsRegistry.resolveManagedClass( reg.getDescriptor() );
+			final ClassDetails descriptorClassDetails = classDetailsRegistry.resolveClassDetails( reg.getDescriptor() );
 			final JdbcType descriptor = FallbackBeanInstanceProducer.INSTANCE.produceBeanInstance( descriptorClassDetails.toJavaClass() );
 
 			final int registrationCode = code == null
@@ -181,12 +180,12 @@ public class TypeContributionProcessor {
 		}
 
 		registrations.forEach( (reg) -> {
-			final ClassDetails converterDetails = classDetailsRegistry.resolveManagedClass( reg.getConverter() );
+			final ClassDetails converterDetails = classDetailsRegistry.resolveClassDetails( reg.getConverter() );
 
 			final Class<?> explicitDomainType;
 			final String explicitDomainTypeName = reg.getClazz();
 			if ( StringHelper.isNotEmpty( explicitDomainTypeName ) ) {
-				explicitDomainType = classDetailsRegistry.resolveManagedClass( explicitDomainTypeName ).toJavaClass();
+				explicitDomainType = classDetailsRegistry.resolveClassDetails( explicitDomainTypeName ).toJavaClass();
 			}
 			else {
 				explicitDomainType = null;
@@ -217,8 +216,8 @@ public class TypeContributionProcessor {
 		}
 
 		registrations.forEach( (reg) -> {
-			final ClassDetails embeddableClassDetails = classDetailsRegistry.resolveManagedClass( reg.getEmbeddableClass() );
-			final ClassDetails instantiatorClassDetails = classDetailsRegistry.resolveManagedClass( reg.getInstantiator() );
+			final ClassDetails embeddableClassDetails = classDetailsRegistry.resolveClassDetails( reg.getEmbeddableClass() );
+			final ClassDetails instantiatorClassDetails = classDetailsRegistry.resolveClassDetails( reg.getInstantiator() );
 			metadataCollector.registerEmbeddableInstantiator( embeddableClassDetails.toJavaClass(), instantiatorClassDetails.toJavaClass() );
 		} );
 	}
@@ -238,8 +237,8 @@ public class TypeContributionProcessor {
 		}
 
 		registrations.forEach( (reg) -> {
-			final ClassDetails domainTypeDetails = classDetailsRegistry.resolveManagedClass( reg.getClazz() );
-			final ClassDetails descriptorDetails = classDetailsRegistry.resolveManagedClass( reg.getDescriptor() );
+			final ClassDetails domainTypeDetails = classDetailsRegistry.resolveClassDetails( reg.getClazz() );
+			final ClassDetails descriptorDetails = classDetailsRegistry.resolveClassDetails( reg.getDescriptor() );
 
 			metadataCollector.registerUserType( domainTypeDetails.toJavaClass(), descriptorDetails.toJavaClass() );
 		} );
@@ -260,8 +259,8 @@ public class TypeContributionProcessor {
 		}
 
 		registrations.forEach( (reg) -> {
-			final ClassDetails domainTypeDetails = classDetailsRegistry.resolveManagedClass( reg.getClazz() );
-			final ClassDetails descriptorDetails = classDetailsRegistry.resolveManagedClass( reg.getDescriptor() );
+			final ClassDetails domainTypeDetails = classDetailsRegistry.resolveClassDetails( reg.getClazz() );
+			final ClassDetails descriptorDetails = classDetailsRegistry.resolveClassDetails( reg.getDescriptor() );
 
 			metadataCollector.registerCompositeUserType( domainTypeDetails.toJavaClass(), descriptorDetails.toJavaClass() );
 		} );
@@ -286,7 +285,7 @@ public class TypeContributionProcessor {
 		}
 
 		registrations.forEach( (reg) -> {
-			final ClassDetails descriptorDetails = classDetailsRegistry.resolveManagedClass( reg.getDescriptor() );
+			final ClassDetails descriptorDetails = classDetailsRegistry.resolveClassDetails( reg.getDescriptor() );
 			final Map<String,String> parameterMap = extractParameterMap( reg.getParameters() );
 
 			metadataCollector.addCollectionTypeRegistration(

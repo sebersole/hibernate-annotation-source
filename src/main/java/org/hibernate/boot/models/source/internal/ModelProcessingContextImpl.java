@@ -60,15 +60,30 @@ public class ModelProcessingContextImpl implements ModelProcessingContext {
 		this.buildingContext = buildingContext;
 		this.descriptorRegistry = new AnnotationDescriptorRegistryImpl( this );
 		this.classDetailsRegistry = new ClassDetailsRegistryImpl( this );
-		
+
+		primeRegistries();
+	}
+
+	public ModelProcessingContextImpl(
+			ClassDetailsRegistry classDetailsRegistry,
+			AnnotationDescriptorRegistryImpl annotationDescriptorRegistry,
+			MetadataBuildingContext buildingContext) {
+		this.buildingContext = buildingContext;
+		this.descriptorRegistry = annotationDescriptorRegistry;
+		this.classDetailsRegistry = classDetailsRegistry;
+
+		primeRegistries();
+	}
+
+	private void primeRegistries() {
 		AnnotationWrapperHelper.forEachOrmAnnotation( (annotationDescriptor) -> {
 			descriptorRegistry.register( annotationDescriptor );
-			classDetailsRegistry.addManagedClass( new ClassDetailsImpl( annotationDescriptor.getAnnotationType(), this ) );
+			classDetailsRegistry.addClassDetails( new ClassDetailsImpl( annotationDescriptor.getAnnotationType(), this ) );
 		} );
 
 		// todo (annotation-source) : add any standard Java types here up front
 		//  	- anything we know we will never have to enhance really.
-		//		- possibly leverage `buildingContext.getBootstrapContext().getTypeConfiguration().getBasicTypeRegistry()`
+		//		- possibly leverage `BasicTypeRegistry`, `JavaType(Registration(s))`
 
 		primeClassDetails( String.class );
 		primeClassDetails( Boolean.class );
@@ -109,7 +124,9 @@ public class ModelProcessingContextImpl implements ModelProcessingContext {
 	}
 
 	private void primeClassDetails(Class<?> javaType) {
-		classDetailsRegistry.resolveManagedClass(
+		// Since we have a Class reference already, it is safe to directly use
+		// the reflection
+		classDetailsRegistry.resolveClassDetails(
 				javaType.getName(),
 				ClassDetailsBuilderImpl::buildClassDetailsStatic
 		);

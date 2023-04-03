@@ -8,6 +8,7 @@ package org.hibernate.boot.models.source.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -38,6 +39,7 @@ public class OrmAnnotationDescriptorImpl<A extends Annotation> implements Annota
 	private final AnnotationDescriptor<?> repeatableContainer;
 
 	private final boolean inherited;
+	private final EnumSet<Kind> allowableTargets;
 
 	public OrmAnnotationDescriptorImpl(
 			Class<A> annotationType,
@@ -48,6 +50,7 @@ public class OrmAnnotationDescriptorImpl<A extends Annotation> implements Annota
 		this.repeatableContainer = repeatableContainer;
 
 		this.inherited = AnnotationHelper.isInherited( annotationType );
+		this.allowableTargets = AnnotationHelper.extractTargets( annotationType );
 	}
 
 	@Override
@@ -66,6 +69,11 @@ public class OrmAnnotationDescriptorImpl<A extends Annotation> implements Annota
 	@Override
 	public boolean isInherited() {
 		return inherited;
+	}
+
+	@Override
+	public EnumSet<Kind> getAllowableTargets() {
+		return allowableTargets;
 	}
 
 	/**
@@ -133,5 +141,10 @@ public class OrmAnnotationDescriptorImpl<A extends Annotation> implements Annota
 	@Override
 	public int hashCode() {
 		return Objects.hash( annotationType );
+	}
+
+	@Override
+	public String toString() {
+		return "AnnotationDescriptor(" + annotationType.getName() + ")";
 	}
 }

@@ -8,11 +8,14 @@ package org.hibernate.boot.models.source.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
+import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.EnumSet;
 import java.util.Locale;
 
 import org.hibernate.boot.models.source.AnnotationAccessException;
+import org.hibernate.boot.models.source.spi.AnnotationTarget;
 
 /**
  * Helper for dealing with actual {@link Annotation} references
@@ -20,6 +23,9 @@ import org.hibernate.boot.models.source.AnnotationAccessException;
  * @author Steve Ebersole
  */
 public class AnnotationHelper {
+	private AnnotationHelper() {
+		// disallow direct instantiation
+	}
 
 	/**
 	 * Extract a "raw" value directly from an {@linkplain Annotation annotation}
@@ -47,7 +53,7 @@ public class AnnotationHelper {
 		return annotationType.isAnnotationPresent( Inherited.class );
 	}
 
-	private AnnotationHelper() {
-		// disallow direct instantiation
+	public static <A extends Annotation> EnumSet<AnnotationTarget.Kind> extractTargets(Class<A> annotationType) {
+		return AnnotationTarget.Kind.from( annotationType.getAnnotation( Target.class ) );
 	}
 }

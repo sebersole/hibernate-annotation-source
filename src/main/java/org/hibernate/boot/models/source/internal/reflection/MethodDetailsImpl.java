@@ -25,9 +25,9 @@ public class MethodDetailsImpl extends LazyAnnotationTarget implements MethodDet
 	public MethodDetailsImpl(Method method, ModelProcessingContext processingContext) {
 		super( method::getAnnotations, processingContext );
 		this.method = method;
-		this.type = processingContext.getClassDetailsRegistry().resolveManagedClass(
+		this.type = processingContext.getClassDetailsRegistry().resolveClassDetails(
 				method.getReturnType().getName(),
-				() -> ClassDetailsBuilderImpl.INSTANCE.buildClassDetails( method.getReturnType(), getProcessingContext() )
+				() -> ClassDetailsBuilderImpl.buildClassDetails( method.getReturnType(), getProcessingContext() )
 		);
 	}
 
@@ -53,10 +53,6 @@ public class MethodDetailsImpl extends LazyAnnotationTarget implements MethodDet
 			return false;
 		}
 
-		if ( !isPersistableMethod( method.getModifiers() ) ) {
-			return false;
-		}
-
-		return true;
+		return isPersistableMethod( method.getModifiers() );
 	}
 }

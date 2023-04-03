@@ -49,7 +49,7 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 			String name,
 			Class<?> managedClass,
 			ModelProcessingContext processingContext) {
-		super( managedClass::getDeclaredAnnotations, processingContext );
+		super( managedClass::getAnnotations, processingContext );
 		this.name = name;
 		this.managedClass = managedClass;
 
@@ -60,13 +60,13 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 			superType = null;
 		}
 		else {
-			superType = classDetailsRegistry.resolveManagedClass(
+			superType = classDetailsRegistry.resolveClassDetails(
 					superclass.getName(),
-					() -> ClassDetailsBuilderImpl.INSTANCE.buildClassDetails( superclass, getProcessingContext() )
+					() -> ClassDetailsBuilderImpl.buildClassDetails( superclass, getProcessingContext() )
 			);
 		}
 
-		classDetailsRegistry.addManagedClass( this );
+		classDetailsRegistry.addClassDetails( this );
 	}
 
 	@Override
@@ -111,13 +111,26 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 		final ArrayList<ClassDetails> result = CollectionHelper.arrayList( interfaceClasses.length );
 		for ( int i = 0; i < interfaceClasses.length; i++ ) {
 			final Class<?> interfaceClass = interfaceClasses[ i ];
-			final ClassDetails interfaceDetails = getProcessingContext().getClassDetailsRegistry().resolveManagedClass(
+			final ClassDetails interfaceDetails = getProcessingContext().getClassDetailsRegistry().resolveClassDetails(
 					interfaceClass.getName(),
 					() -> ClassDetailsBuilderImpl.INSTANCE.buildClassDetails( interfaceClass, getProcessingContext() )
 			);
 			result.add( interfaceDetails );
 		}
 		return result;
+	}
+
+	@Override
+	public boolean isImplementor(Class<?> checkType) {
+		return checkType.isAssignableFrom( managedClass );
+	}
+
+	@Override
+	public boolean isImplementor(ClassDetails checkType) {
+		if ( checkType instanceof ClassDetailsImpl ) {
+			return isImplementor( ( (ClassDetailsImpl) checkType ).managedClass );
+		}
+		return ClassDetails.super.isImplementor( checkType );
 	}
 
 	@Override

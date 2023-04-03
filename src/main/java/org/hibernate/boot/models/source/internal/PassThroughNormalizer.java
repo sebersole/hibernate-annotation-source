@@ -10,6 +10,8 @@ import org.hibernate.boot.models.source.spi.AnnotationTarget;
 import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
+ * ValueNormalizer which simply returns the value it is given
+ *
  * @author Steve Ebersole
  */
 public class PassThroughNormalizer<V> implements ValueNormalizer<V, V> {

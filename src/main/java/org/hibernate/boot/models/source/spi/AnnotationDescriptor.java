@@ -8,6 +8,7 @@ package org.hibernate.boot.models.source.spi;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -25,6 +26,11 @@ public interface AnnotationDescriptor<A extends Annotation> extends AnnotationTa
 	 * The annotation type
 	 */
 	Class<A> getAnnotationType();
+
+	/**
+	 * The places the described annotation can be used
+	 */
+	EnumSet<Kind> getAllowableTargets();
 
 	/**
 	 * Whether the annotation defined as {@linkplain java.lang.annotation.Inherited inherited}

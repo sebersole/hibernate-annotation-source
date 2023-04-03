@@ -8,6 +8,7 @@ package org.hibernate.boot.models.source.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -22,6 +23,7 @@ import org.hibernate.boot.models.source.spi.AnnotationDescriptor;
 import org.hibernate.boot.models.source.spi.AnnotationUsage;
 import org.hibernate.boot.models.source.spi.HibernateAnnotations;
 import org.hibernate.boot.models.source.spi.JpaAnnotations;
+import org.hibernate.internal.util.collections.CollectionHelper;
 
 /**
  * Helper for dealing with annotation wrappers -<ul>
@@ -50,18 +52,29 @@ public class AnnotationWrapperHelper {
 	}
 
 	public static <A extends Annotation> List<AnnotationUsage<A>> getRepeatedAnnotations(AnnotationDescriptor<A> type, Map<Class<? extends Annotation>, AnnotationUsage<?>> usageMap) {
-		final AnnotationUsage<A> annotation = getAnnotation( type, usageMap );
-		if ( annotation != null ) {
-			return Collections.singletonList( annotation );
+		// e.g. `@NamedQuery`
+		final AnnotationUsage<A> usage = getAnnotation( type, usageMap );
+		// e.g. `@NamedQueries`
+		final AnnotationUsage<?> containerUsage = type.getRepeatableContainer() != null
+				? getAnnotation( type.getRepeatableContainer(), usageMap )
+				: null;
+
+		if ( containerUsage != null ) {
+			//noinspection unchecked
+			final List<AnnotationUsage<A>> repetitions = (List<AnnotationUsage<A>>) containerUsage.getAttributeValue( "value" ).getValue();
+			if ( CollectionHelper.isNotEmpty( repetitions ) ) {
+				if ( usage != null ) {
+					// we can have both when repeatable + inherited are mixed
+					final ArrayList<AnnotationUsage<A>> combined = new ArrayList<>( repetitions );
+					combined.add( usage );
+					return combined;
+				}
+				return repetitions;
+			}
 		}
 
-		final AnnotationDescriptor<?> repeatableContainer = type.getRepeatableContainer();
-		if ( repeatableContainer != null ) {
-			final AnnotationUsage<?> containerUsage = getAnnotation( repeatableContainer, usageMap );
-			if ( containerUsage != null ) {
-				//noinspection unchecked
-				return (List<AnnotationUsage<A>>) containerUsage.getAttributeValue( "value" ).getValue();
-			}
+		if ( usage != null ) {
+			return Collections.singletonList( usage );
 		}
 
 		return Collections.emptyList();

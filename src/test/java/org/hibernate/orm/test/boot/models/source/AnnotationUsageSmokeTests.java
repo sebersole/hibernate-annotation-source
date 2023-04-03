@@ -9,6 +9,8 @@ package org.hibernate.orm.test.boot.models.source;
 import java.lang.reflect.Field;
 
 import org.hibernate.boot.models.source.internal.ModelProcessingContextImpl;
+import org.hibernate.orm.test.boot.models.CustomAnnotation;
+import org.hibernate.orm.test.boot.models.CustomMetaAnnotation;
 import org.hibernate.orm.test.boot.models.SimpleEntity;
 import org.hibernate.boot.models.source.internal.AnnotationUsageImpl;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptor;

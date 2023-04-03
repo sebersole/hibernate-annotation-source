@@ -151,7 +151,7 @@ public class XmlMappingProcessor {
 		}
 
 		converters.forEach( (converter) -> {
-			final ClassDetails converterDetails = classDetailsRegistry.resolveManagedClass( converter.getClazz() );
+			final ClassDetails converterDetails = classDetailsRegistry.resolveClassDetails( converter.getClazz() );
 			final boolean autoApply = converter.isAutoApply() == TRUE;
 
 			metadataCollector.getConverterRegistry().addAttributeConverter( new ClassBasedConverterDescriptor(
@@ -257,7 +257,7 @@ public class XmlMappingProcessor {
 		final String name = StringHelper.isEmpty( classNode.getName() )
 				? className
 				: classNode.getName();
-		assert classDetailsRegistry.findManagedClass( name ) == null;
+		assert classDetailsRegistry.findClassDetails( name ) == null;
 
 		final ClassDetailsImpl classDetails = new ClassDetailsImpl( name, className, null, processingContext.getModelProcessingContext() );
 		applyEntityAnnotation( classDetails, name, processingContext );
@@ -503,7 +503,7 @@ public class XmlMappingProcessor {
 					singletonList(
 							new AnnotationAttributeValueImpl<>(
 									JpaAnnotations.ACCESS.getAttribute( "strategy" ),
-									classDetailsRegistry.resolveManagedClass( attributeAccessor )
+									classDetailsRegistry.resolveClassDetails( attributeAccessor )
 							)
 					)
 			) );

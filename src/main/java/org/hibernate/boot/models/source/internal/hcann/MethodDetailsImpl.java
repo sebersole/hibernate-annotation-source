@@ -24,7 +24,7 @@ public class MethodDetailsImpl extends LazyAnnotationTarget implements MethodDet
 	public MethodDetailsImpl(XMethod xMethod, ModelProcessingContext processingContext) {
 		super( xMethod::getAnnotations, processingContext );
 		this.xMethod = xMethod;
-		this.type = processingContext.getClassDetailsRegistry().resolveManagedClass(
+		this.type = processingContext.getClassDetailsRegistry().resolveClassDetails(
 				xMethod.getType().getName(),
 				() -> new ClassDetailsImpl( xMethod.getType(), processingContext )
 		);
@@ -51,10 +51,6 @@ public class MethodDetailsImpl extends LazyAnnotationTarget implements MethodDet
 			return false;
 		}
 
-		if ( !isPersistableMethod( xMethod.getModifiers() ) ) {
-			return false;
-		}
-
-		return true;
+		return isPersistableMethod( xMethod.getModifiers() );
 	}
 }

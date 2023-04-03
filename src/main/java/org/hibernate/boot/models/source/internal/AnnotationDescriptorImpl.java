@@ -7,6 +7,7 @@
 package org.hibernate.boot.models.source.internal;
 
 import java.lang.annotation.Annotation;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,20 +36,25 @@ public class AnnotationDescriptorImpl<A extends Annotation>
 	private final AnnotationDescriptor<?> repeatableContainer;
 
 	private final boolean inherited;
+	private final EnumSet<Kind> allowableTargets;
 	private final List<AnnotationAttributeDescriptor<A,?,?>> attributeDescriptors;
 
 	public AnnotationDescriptorImpl(
 			Class<A> annotationType,
 			AnnotationDescriptor<?> repeatableContainer,
 			ModelProcessingContext processingContext) {
-		super( annotationType.getAnnotations(), processingContext );
+		// todo (annotation-source) : `#getDeclaredAnnotations` or `#getAnnotations`?
+		//		- do we want `@Inherited` here?
+//		super( annotationType.getAnnotations(), processingContext );
+		super( annotationType.getDeclaredAnnotations(), processingContext );
 		this.annotationType = annotationType;
 		this.repeatableContainer = repeatableContainer;
 
 		this.inherited = AnnotationHelper.isInherited( annotationType );
+		this.allowableTargets = AnnotationHelper.extractTargets( annotationType );
 		this.attributeDescriptors = AnnotationDescriptorBuilder.extractAttributeDescriptors( annotationType );
 
-		processingContext.getClassDetailsRegistry().resolveManagedClass(
+		processingContext.getClassDetailsRegistry().resolveClassDetails(
 				annotationType.getName(),
 				ClassDetailsBuilderImpl::buildClassDetailsStatic
 		);
@@ -67,6 +73,11 @@ public class AnnotationDescriptorImpl<A extends Annotation>
 	@Override
 	public boolean isInherited() {
 		return inherited;
+	}
+
+	@Override
+	public EnumSet<Kind> getAllowableTargets() {
+		return allowableTargets;
 	}
 
 	@Override
@@ -106,5 +117,10 @@ public class AnnotationDescriptorImpl<A extends Annotation>
 	@Override
 	public int hashCode() {
 		return Objects.hash( annotationType );
+	}
+
+	@Override
+	public String toString() {
+		return "AnnotationDescriptor(" + annotationType.getName() + ")";
 	}
 }

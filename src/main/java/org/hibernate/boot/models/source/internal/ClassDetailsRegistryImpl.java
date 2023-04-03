@@ -26,22 +26,26 @@ import org.hibernate.boot.models.spi.ModelProcessingContext;
  * @author Steve Ebersole
  */
 public class ClassDetailsRegistryImpl implements ClassDetailsRegistry {
+	private final ClassDetailsBuilder fallbackClassDetailsBuilder;
 	private final ModelProcessingContext context;
 
-	private final ClassDetailsBuilder fallbackClassDetailsBuilder;
 	private final Map<String, ClassDetails> managedClassMap = new ConcurrentHashMap<>();
 	private final Map<String, List<ClassDetails>> subTypeManagedClassMap = new ConcurrentHashMap<>();
 
 	public ClassDetailsRegistryImpl(ModelProcessingContext context) {
-		this.context = context;
-		this.fallbackClassDetailsBuilder = new ClassDetailsBuilderImpl( context );
+		this( new ClassDetailsBuilderImpl( context ), context );
 	}
 
-	@Override public ClassDetails findManagedClass(String name) {
+	public ClassDetailsRegistryImpl(ClassDetailsBuilder fallbackClassDetailsBuilder, ModelProcessingContext context) {
+		this.context = context;
+		this.fallbackClassDetailsBuilder = fallbackClassDetailsBuilder;
+	}
+
+	@Override public ClassDetails findClassDetails(String name) {
 		return managedClassMap.get( name );
 	}
 
-	@Override public ClassDetails getManagedClass(String name) {
+	@Override public ClassDetails getClassDetails(String name) {
 		final ClassDetails named = managedClassMap.get( name );
 		if ( named == null ) {
 			throw new UnknownManagedClassException( "Unknown managed class" );
@@ -49,7 +53,7 @@ public class ClassDetailsRegistryImpl implements ClassDetailsRegistry {
 		return named;
 	}
 
-	@Override public void forEachManagedClass(Consumer<ClassDetails> consumer) {
+	@Override public void forEachClassDetails(Consumer<ClassDetails> consumer) {
 		managedClassMap.values().forEach( consumer );
 	}
 
@@ -64,11 +68,11 @@ public class ClassDetailsRegistryImpl implements ClassDetailsRegistry {
 		}
 	}
 
-	@Override public void addManagedClass(ClassDetails classDetails) {
-		addManagedClass( classDetails.getClassName(), classDetails );
+	@Override public void addClassDetails(ClassDetails classDetails) {
+		addClassDetails( classDetails.getClassName(), classDetails );
 	}
 
-	@Override public void addManagedClass(String name, ClassDetails classDetails) {
+	@Override public void addClassDetails(String name, ClassDetails classDetails) {
 		managedClassMap.put( name, classDetails );
 
 		if ( classDetails.getSuperType() != null ) {
@@ -81,11 +85,11 @@ public class ClassDetailsRegistryImpl implements ClassDetailsRegistry {
 		}
 	}
 
-	@Override public ClassDetails resolveManagedClass(String name) {
-		return resolveManagedClass( name, fallbackClassDetailsBuilder );
+	@Override public ClassDetails resolveClassDetails(String name) {
+		return resolveClassDetails( name, fallbackClassDetailsBuilder );
 	}
 
-	@Override public ClassDetails resolveManagedClass(
+	@Override public ClassDetails resolveClassDetails(
 			String name,
 			ClassDetailsBuilder creator) {
 		final ClassDetails existing = managedClassMap.get( name );
@@ -94,11 +98,11 @@ public class ClassDetailsRegistryImpl implements ClassDetailsRegistry {
 		}
 
 		final ClassDetails created = creator.buildClassDetails( name, context );
-		addManagedClass( name, created );
+		addClassDetails( name, created );
 		return created;
 	}
 
-	@Override public ClassDetails resolveManagedClass(
+	@Override public ClassDetails resolveClassDetails(
 			String name,
 			Supplier<ClassDetails> creator) {
 		final ClassDetails existing = managedClassMap.get( name );
@@ -107,7 +111,7 @@ public class ClassDetailsRegistryImpl implements ClassDetailsRegistry {
 		}
 
 		final ClassDetails created = creator.get();
-		addManagedClass( name, created );
+		addClassDetails( name, created );
 		return created;
 	}
 }

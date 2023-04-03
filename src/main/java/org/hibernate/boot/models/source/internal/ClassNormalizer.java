@@ -31,13 +31,13 @@ public class ClassNormalizer implements ValueNormalizer<Class<?>, ClassDetails> 
 		}
 
 		final ClassDetailsRegistry classDetailsRegistry = processingContext.getClassDetailsRegistry();
-		final ClassDetails existing = classDetailsRegistry.findManagedClass( incomingValue.getName() );
+		final ClassDetails existing = classDetailsRegistry.findClassDetails( incomingValue.getName() );
 		if ( existing != null ) {
 			return existing;
 		}
 		else {
 			final ClassDetails classDetails = new ClassDetailsImpl( incomingValue, processingContext );
-			classDetailsRegistry.addManagedClass( classDetails );
+			classDetailsRegistry.addClassDetails( classDetails );
 			return classDetails;
 		}
 	}

@@ -9,7 +9,6 @@ package org.hibernate.orm.test.boot.models;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Comment;
-import org.hibernate.orm.test.boot.models.source.CustomAnnotation;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Cacheable;

@@ -44,7 +44,7 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 
 		this.superType = determineSuperType( xClass, processingContext );
 
-		processingContext.getClassDetailsRegistry().addManagedClass( this );
+		processingContext.getClassDetailsRegistry().addClassDetails( this );
 	}
 
 	private ClassDetails determineSuperType(XClass xClass, ModelProcessingContext processingContext) {
@@ -57,13 +57,13 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 		}
 
 		final ClassDetailsRegistry classDetailsRegistry = processingContext.getClassDetailsRegistry();
-		final ClassDetails existing = classDetailsRegistry.findManagedClass( superclass.getName() );
+		final ClassDetails existing = classDetailsRegistry.findClassDetails( superclass.getName() );
 		if ( existing != null ) {
 			return existing;
 		}
 
 		final ClassDetailsImpl managedClass = new ClassDetailsImpl( superclass, processingContext );
-		classDetailsRegistry.addManagedClass( managedClass );
+		classDetailsRegistry.addClassDetails( managedClass );
 		return managedClass;
 	}
 
@@ -105,13 +105,18 @@ public class ClassDetailsImpl extends LazyAnnotationTarget implements ClassDetai
 		final ArrayList<ClassDetails> result = CollectionHelper.arrayList( interfaces.length );
 		for ( int i = 0; i < interfaces.length; i++ ) {
 			final XClass intf = interfaces[ i ];
-			final ClassDetails classDetails = getProcessingContext().getClassDetailsRegistry().resolveManagedClass(
+			final ClassDetails classDetails = getProcessingContext().getClassDetailsRegistry().resolveClassDetails(
 					intf.getName(),
 					() -> new ClassDetailsImpl( intf, getProcessingContext() )
 			);
 			result.add( classDetails );
 		}
 		return result;
+	}
+
+	@Override
+	public boolean isImplementor(Class<?> checkType) {
+		return checkType.isAssignableFrom( toJavaClass() );
 	}
 
 	@Override

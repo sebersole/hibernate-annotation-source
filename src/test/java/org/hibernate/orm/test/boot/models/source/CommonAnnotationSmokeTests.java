@@ -9,10 +9,10 @@ package org.hibernate.orm.test.boot.models.source;
 import java.util.Arrays;
 import java.util.List;
 
+import org.hibernate.annotations.JavaTypeRegistration;
 import org.hibernate.annotations.common.reflection.XClass;
 import org.hibernate.annotations.common.reflection.java.JavaReflectionManager;
 import org.hibernate.boot.models.source.internal.ModelProcessingContextImpl;
-import org.hibernate.orm.test.boot.models.SimpleEntity;
 import org.hibernate.boot.models.source.internal.hcann.ClassDetailsImpl;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptorRegistry;
 import org.hibernate.boot.models.source.spi.AnnotationUsage;
@@ -21,6 +21,8 @@ import org.hibernate.boot.models.source.spi.JpaAnnotations;
 import org.hibernate.boot.models.source.spi.MethodDetails;
 import org.hibernate.boot.models.spi.ModelProcessingContext;
 import org.hibernate.internal.util.MutableInteger;
+import org.hibernate.orm.test.boot.models.CustomAnnotation;
+import org.hibernate.orm.test.boot.models.SimpleEntity;
 
 import org.hibernate.testing.boot.MetadataBuildingContextTestingImpl;
 import org.hibernate.testing.orm.junit.ServiceRegistry;
@@ -28,11 +30,19 @@ import org.hibernate.testing.orm.junit.ServiceRegistryScope;
 import org.junit.jupiter.api.Test;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.NamedQuery;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hibernate.boot.models.source.internal.AnnotationHelper.extractTargets;
+import static org.hibernate.boot.models.source.spi.AnnotationTarget.Kind.CLASS;
+import static org.hibernate.boot.models.source.spi.AnnotationTarget.Kind.FIELD;
+import static org.hibernate.boot.models.source.spi.AnnotationTarget.Kind.METHOD;
+import static org.hibernate.boot.models.source.spi.AnnotationTarget.Kind.PACKAGE;
 
 /**
+ * Smoke tests about how HCANN handles various situations
+ *
  * @author Steve Ebersole
  */
 @ServiceRegistry
@@ -65,6 +75,13 @@ public class CommonAnnotationSmokeTests {
 		final XClass xClass = hcannReflectionManager.toXClass( SimpleEntity.class );
 
 		return new ClassDetailsImpl( xClass, processingContext );
+	}
+
+	@Test
+	void testAllowableTargets() {
+		assertThat( extractTargets( Column.class ) ).containsOnly( FIELD, METHOD );
+		assertThat( extractTargets( Entity.class ) ).containsOnly( CLASS );
+		assertThat( extractTargets( JavaTypeRegistration.class ) ).contains( PACKAGE );
 	}
 
 	@Test
@@ -103,11 +120,12 @@ public class CommonAnnotationSmokeTests {
 		throw new RuntimeException();
 	}
 
+
 	private void verifyNameMapping(FieldDetails nameAttributeSource) {
 		final AnnotationUsage<Column> column = nameAttributeSource.getAnnotation( JpaAnnotations.COLUMN );
 		assertThat( column.getAttributeValue( "name" ).asString() ).isEqualTo( "description" );
 		assertThat( column.getAttributeValue( "table" ).asString() ).isNull();
-//		assertThat( column.getAttributeValue( "table" ).isDefaultValue() ).isTrue();
+		assertThat( column.getAttributeValue( "table" ).isDefaultValue() ).isTrue();
 		assertThat( column.getAttributeValue( "nullable" ).asBoolean() ).isFalse();
 //		assertThat( column.getAttributeValue( "nullable" ).isDefaultValue() ).isTrue();
 		assertThat( column.getAttributeValue( "unique" ).asBoolean() ).isTrue();

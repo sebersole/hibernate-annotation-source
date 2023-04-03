@@ -26,9 +26,9 @@ public class FieldDetailsImpl extends LazyAnnotationTarget implements FieldDetai
 	public FieldDetailsImpl(Field field, ModelProcessingContext processingContext) {
 		super( field::getAnnotations, processingContext );
 		this.field = field;
-		this.type = processingContext.getClassDetailsRegistry().resolveManagedClass(
+		this.type = processingContext.getClassDetailsRegistry().resolveClassDetails(
 				field.getType().getName(),
-				() -> ClassDetailsBuilderImpl.INSTANCE.buildClassDetails( field.getType(), getProcessingContext() )
+				() -> ClassDetailsBuilderImpl.buildClassDetails( field.getType(), getProcessingContext() )
 		);
 	}
 

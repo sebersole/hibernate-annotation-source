@@ -10,7 +10,7 @@ import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
  * Contract for creating the ClassDetails for a Java type we have not yet seen
- * as part of {@link ClassDetailsRegistry#resolveManagedClass}
+ * as part of {@link ClassDetailsRegistry#resolveClassDetails}
  *
  * @author Steve Ebersole
  */

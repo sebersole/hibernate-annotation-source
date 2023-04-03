@@ -16,6 +16,8 @@ import org.hibernate.internal.util.collections.ArrayHelper;
 import org.hibernate.internal.util.collections.CollectionHelper;
 
 /**
+ * ValueNormalizer for handling arrays of values, with an element ValueNormalizer
+ *
  * @author Steve Ebersole
  */
 public class ArrayNormalizer<I,O> implements ValueNormalizer<I[], List<O>>{

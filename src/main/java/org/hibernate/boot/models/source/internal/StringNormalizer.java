@@ -11,6 +11,8 @@ import org.hibernate.boot.models.spi.ModelProcessingContext;
 import org.hibernate.internal.util.StringHelper;
 
 /**
+ * ValueNormalizer for {@link String} values
+ *
  * @author Steve Ebersole
  */
 public class StringNormalizer implements ValueNormalizer<String, String> {
