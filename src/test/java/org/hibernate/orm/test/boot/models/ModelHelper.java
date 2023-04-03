@@ -10,13 +10,16 @@ import java.util.Set;
 
 import org.hibernate.annotations.common.reflection.XClass;
 import org.hibernate.annotations.common.reflection.java.JavaReflectionManager;
+import org.hibernate.boot.internal.ClassLoaderAccessImpl;
 import org.hibernate.boot.models.intermediate.internal.EntityHierarchyBuilder;
 import org.hibernate.boot.models.intermediate.spi.EntityHierarchy;
 import org.hibernate.boot.models.source.internal.ModelProcessingContextImpl;
 import org.hibernate.boot.models.source.internal.hcann.ClassDetailsImpl;
 import org.hibernate.boot.models.spi.ModelProcessingContext;
 import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.spi.ClassLoaderAccess;
 
+import org.hibernate.testing.boot.ClassLoaderAccessTestingImpl;
 import org.hibernate.testing.boot.MetadataBuildingContextTestingImpl;
 
 /**
@@ -26,6 +29,11 @@ public class ModelHelper {
 	public static ModelProcessingContext buildProcessingContext(StandardServiceRegistry registry) {
 		final MetadataBuildingContextTestingImpl buildingContext = new MetadataBuildingContextTestingImpl( registry );
 		return new ModelProcessingContextImpl( buildingContext );
+	}
+
+	public static ModelProcessingContext buildProcessingContext(StandardServiceRegistry registry, ClassLoaderAccess classLoaderAccess) {
+		final MetadataBuildingContextTestingImpl buildingContext = new MetadataBuildingContextTestingImpl( registry );
+		return new ModelProcessingContextImpl( buildingContext, classLoaderAccess );
 	}
 
 	public static Set<EntityHierarchy> buildHierarchies(StandardServiceRegistry registry, Class<?>... classes) {

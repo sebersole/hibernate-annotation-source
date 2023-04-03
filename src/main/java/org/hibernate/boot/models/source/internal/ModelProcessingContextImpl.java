@@ -39,6 +39,7 @@ import org.hibernate.boot.models.source.spi.AnnotationDescriptorRegistry;
 import org.hibernate.boot.models.source.spi.AnnotationUsage;
 import org.hibernate.boot.models.source.spi.ClassDetailsRegistry;
 import org.hibernate.boot.models.spi.ModelProcessingContext;
+import org.hibernate.boot.spi.ClassLoaderAccess;
 import org.hibernate.boot.spi.MetadataBuildingContext;
 import org.hibernate.internal.util.collections.CollectionHelper;
 
@@ -50,27 +51,22 @@ import jakarta.persistence.AttributeConverter;
  * @author Steve Ebersole
  */
 public class ModelProcessingContextImpl implements ModelProcessingContext {
+	private final MetadataBuildingContext buildingContext;
+	private final ClassLoaderAccess classLoaderAccess;
 	private final AnnotationDescriptorRegistryImpl descriptorRegistry;
 	private final ClassDetailsRegistry classDetailsRegistry;
-	private final MetadataBuildingContext buildingContext;
 
 	private final Map<AnnotationDescriptor<?>,List<AnnotationUsage<?>>> annotationUsageMap = new HashMap<>();
 
 	public ModelProcessingContextImpl(MetadataBuildingContext buildingContext) {
-		this.buildingContext = buildingContext;
-		this.descriptorRegistry = new AnnotationDescriptorRegistryImpl( this );
-		this.classDetailsRegistry = new ClassDetailsRegistryImpl( this );
-
-		primeRegistries();
+		this( buildingContext, buildingContext.getBootstrapContext().getClassLoaderAccess() );
 	}
 
-	public ModelProcessingContextImpl(
-			ClassDetailsRegistry classDetailsRegistry,
-			AnnotationDescriptorRegistryImpl annotationDescriptorRegistry,
-			MetadataBuildingContext buildingContext) {
+	public ModelProcessingContextImpl(MetadataBuildingContext buildingContext, ClassLoaderAccess classLoaderAccess) {
 		this.buildingContext = buildingContext;
-		this.descriptorRegistry = annotationDescriptorRegistry;
-		this.classDetailsRegistry = classDetailsRegistry;
+		this.classLoaderAccess = classLoaderAccess;
+		this.descriptorRegistry = new AnnotationDescriptorRegistryImpl( this );
+		this.classDetailsRegistry = new ClassDetailsRegistryImpl( this );
 
 		primeRegistries();
 	}
@@ -140,6 +136,11 @@ public class ModelProcessingContextImpl implements ModelProcessingContext {
 	@Override
 	public ClassDetailsRegistry getClassDetailsRegistry() {
 		return classDetailsRegistry;
+	}
+
+	@Override
+	public ClassLoaderAccess getClassLoaderAccess() {
+		return classLoaderAccess;
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import org.hibernate.annotations.common.reflection.XClass;
 import org.hibernate.boot.models.source.spi.ClassDetails;
 import org.hibernate.boot.models.source.spi.ClassDetailsBuilder;
 import org.hibernate.boot.models.spi.ModelProcessingContext;
-import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
+import org.hibernate.boot.spi.ClassLoaderAccess;
 
 /**
  * HCANN based ClassDetailsBuilder
@@ -19,14 +19,11 @@ import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
  * @author Steve Ebersole
  */
 public class ClassDetailsBuilderImpl implements ClassDetailsBuilder {
-	private final ClassLoaderService classLoaderService;
+	private final ClassLoaderAccess classLoaderAccess;
 	private final ReflectionManager hcannReflectionManager;
 
 	public ClassDetailsBuilderImpl(ModelProcessingContext processingContext) {
-		this.classLoaderService = processingContext.getMetadataBuildingContext()
-				.getBootstrapContext()
-				.getServiceRegistry()
-				.getService( ClassLoaderService.class );
+		this.classLoaderAccess = processingContext.getClassLoaderAccess();
 		this.hcannReflectionManager = processingContext.getMetadataBuildingContext()
 				.getBootstrapContext()
 				.getReflectionManager();
@@ -34,7 +31,7 @@ public class ClassDetailsBuilderImpl implements ClassDetailsBuilder {
 
 	@Override
 	public ClassDetails buildClassDetails(String name, ModelProcessingContext processingContext) {
-		final Class<?> classForName = classLoaderService.classForName( name );
+		final Class<?> classForName = classLoaderAccess.classForName( name );
 		final XClass xClassForName = hcannReflectionManager.toXClass( classForName );
 		return new ClassDetailsImpl( xClassForName, processingContext );
 	}

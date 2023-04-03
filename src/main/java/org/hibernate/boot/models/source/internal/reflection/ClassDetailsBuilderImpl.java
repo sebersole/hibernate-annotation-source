@@ -31,8 +31,7 @@ public class ClassDetailsBuilderImpl implements ClassDetailsBuilder {
 		return buildClassDetails(
 				processingContext.getMetadataBuildingContext()
 						.getBootstrapContext()
-						.getServiceRegistry()
-						.getService( ClassLoaderService.class )
+						.getClassLoaderAccess()
 						.classForName( name ),
 				processingContext
 		);

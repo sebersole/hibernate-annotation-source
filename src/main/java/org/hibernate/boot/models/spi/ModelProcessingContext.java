@@ -14,6 +14,7 @@ import org.hibernate.boot.models.source.spi.AnnotationDescriptor;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptorRegistry;
 import org.hibernate.boot.models.source.spi.AnnotationUsage;
 import org.hibernate.boot.models.source.spi.ClassDetailsRegistry;
+import org.hibernate.boot.spi.ClassLoaderAccess;
 import org.hibernate.boot.spi.MetadataBuildingContext;
 
 /**
@@ -37,6 +38,8 @@ public interface ModelProcessingContext {
 	 * Registry of managed-classes
 	 */
 	ClassDetailsRegistry getClassDetailsRegistry();
+
+	ClassLoaderAccess getClassLoaderAccess();
 
 	void registerUsage(AnnotationUsage<?> usage);
 
