@@ -9,6 +9,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
+        // for ORM snapshots
         url "https://oss.sonatype.org/content/repositories/snapshots"
     }
 }
