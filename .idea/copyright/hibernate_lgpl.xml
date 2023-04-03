@@ -1,7 +1,0 @@
-<component name="CopyrightManager">
-  <copyright>
-    <option name="keyword" value="License:" />
-    <option name="notice" value="Hibernate, Relational Persistence for Idiomatic Java&#10;&#10;License: GNU Lesser General Public License (LGPL), version 2.1 or later.&#10;See the lgpl.txt file in the root directory or http://www.gnu.org/licenses/lgpl-2.1.html." />
-    <option name="myName" value="hibernate-lgpl" />
-  </copyright>
-</component>
