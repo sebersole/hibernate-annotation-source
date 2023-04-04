@@ -10,17 +10,12 @@ repositories {
     mavenLocal()
     maven {
         // for ORM snapshots
+        //      - use `--refresh-dependencies` to circumvent the cached snapshot jar
+        //      which Gradle considers valid for 24 hours
         url "https://oss.sonatype.org/content/repositories/snapshots"
         mavenContent {
             snapshotsOnly()
         }
-    }
-}
-
-configurations.api {
-    resolutionStrategy {
-        // limit caching of snapshots - for ORM snapshots
-        cacheChangingModulesFor 0, 'seconds'
     }
 }
 
