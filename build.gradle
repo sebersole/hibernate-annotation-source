@@ -11,6 +11,16 @@ repositories {
     maven {
         // for ORM snapshots
         url "https://oss.sonatype.org/content/repositories/snapshots"
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+}
+
+configurations.api {
+    resolutionStrategy {
+        // limit caching of snapshots - for ORM snapshots
+        cacheChangingModulesFor 0, 'seconds'
     }
 }
 
