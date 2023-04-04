@@ -25,11 +25,6 @@ import org.hibernate.boot.spi.MetadataBuildingContext;
  */
 public interface ModelProcessingContext {
 	/**
-	 * Access larger boostrap context references
-	 */
-	MetadataBuildingContext getMetadataBuildingContext();
-
-	/**
 	 * The registry of annotation descriptors
 	 */
 	AnnotationDescriptorRegistry getAnnotationDescriptorRegistry();
@@ -39,7 +34,17 @@ public interface ModelProcessingContext {
 	 */
 	ClassDetailsRegistry getClassDetailsRegistry();
 
+	/**
+	 * If model processing code needs to load things from the class-loader, they should
+	 * really use this access.  At this level, accessing the class-loader at all
+	 * sh
+	 */
 	ClassLoaderAccess getClassLoaderAccess();
+
+	/**
+	 * Access larger boostrap context references
+	 */
+	MetadataBuildingContext getMetadataBuildingContext();
 
 	void registerUsage(AnnotationUsage<?> usage);
 

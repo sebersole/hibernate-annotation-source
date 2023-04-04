@@ -29,10 +29,7 @@ public class ClassDetailsBuilderImpl implements ClassDetailsBuilder {
 
 	public static ClassDetails buildClassDetailsStatic(String name, ModelProcessingContext processingContext) {
 		return buildClassDetails(
-				processingContext.getMetadataBuildingContext()
-						.getBootstrapContext()
-						.getClassLoaderAccess()
-						.classForName( name ),
+				processingContext.getClassLoaderAccess().classForName( name ),
 				processingContext
 		);
 	}

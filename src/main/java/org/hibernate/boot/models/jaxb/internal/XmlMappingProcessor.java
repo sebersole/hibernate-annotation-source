@@ -221,7 +221,12 @@ public class XmlMappingProcessor {
 				//			a. could be a normal JPA mapping with specific "HQL import name"
 				//			b. Hibernate entity-name mapping
 				//
+				// todo (annotation-source) : the only real option imo is a separate `<entity entity-name="..." .../>` attribute
+				//
 				// for the time being, assume "normal" mappings
+				// 		- none of these other scenarios are supported today anyway; its one of the goals of this
+				// 		annotation-source work to implement them
+
 				classBindingMap.put( mapping.getClazz(), new ClassProcessingContextImpl( mapping, documentContext ) );
 			} );
 		}
