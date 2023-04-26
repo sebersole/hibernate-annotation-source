@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 import org.hibernate.boot.models.source.internal.AnnotationWrapperHelper;
 
 /**
- * Describes the usage of an annotation.  That is, not the
+ * Describes the usage of an annotation - not the
  * {@linkplain AnnotationDescriptor annotation class} itself, but
  * rather a particular usage of the annotation on one of its
  * allowable {@linkplain AnnotationTarget targets}.

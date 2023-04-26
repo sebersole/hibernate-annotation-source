@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 import org.hibernate.boot.models.source.UnknownManagedClassException;
 
 /**
- * Registry of all {@link ClassDetails} references
+ * Registry of all known {@link ClassDetails} references
  *
  * @author Steve Ebersole
  */

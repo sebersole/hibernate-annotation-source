@@ -9,8 +9,7 @@ package org.hibernate.boot.models.source.spi;
 import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
- * Contract for creating the ClassDetails for a Java type we have not yet seen
- * as part of {@link ClassDetailsRegistry#resolveClassDetails}
+ * Builder for {@link ClassDetails} references.
  *
  * @author Steve Ebersole
  */

@@ -17,6 +17,10 @@ import java.util.function.Consumer;
 import org.hibernate.boot.models.source.AnnotationAccessException;
 
 /**
+ * The target of an annotation; where it can be placed.
+ *
+ * @see java.lang.reflect.AnnotatedElement
+ *
  * @author Steve Ebersole
  */
 public interface AnnotationTarget {

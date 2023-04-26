@@ -12,11 +12,15 @@ import java.lang.reflect.Method;
 import org.hibernate.boot.models.spi.ModelProcessingContext;
 
 /**
- * Describes an attribute of an annotation
+ * Descriptor for the attribute of an annotation
  *
  * @apiNote Many of the methods here deal with the underlying attribute value type.
  * E.g., even though we wrap {@link Class} values as {@link ClassDetails}, these methods
  * deal with {@link Class}.
+ *
+ * @param <A> The annotation type
+ * @param <V> The attribute type as defined on the annotation class, e.g. {@link Class}
+ * @param <W> The attribute wrapper type, e.g. {@link ClassDetails}
  */
 public interface AnnotationAttributeDescriptor<A extends Annotation, V, W> {
 	/**

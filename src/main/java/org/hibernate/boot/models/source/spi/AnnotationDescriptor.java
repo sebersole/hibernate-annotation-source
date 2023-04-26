@@ -12,7 +12,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * Describes an annotation type (the Class)
+ * Describes an annotation type (the {@link Class}).
  *
  * @author Steve Ebersole
  */

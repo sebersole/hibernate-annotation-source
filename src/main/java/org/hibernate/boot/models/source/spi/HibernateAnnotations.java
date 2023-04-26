@@ -11,13 +11,13 @@ import org.hibernate.annotations.*;
 import static org.hibernate.boot.models.source.internal.AnnotationDescriptorBuilder.createOrmDescriptor;
 
 /**
- * Details about Hibernate annotations
+ * AnnotationDescriptor references for Hibernate annotations
  *
- * @implNote Suppressed for deprecation because we refer to many deprecated annotations
+ * @implNote Suppressed for deprecation because we refer to deprecated annotations
  *
  * @author Steve Ebersole
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "removal"})
 public interface HibernateAnnotations {
 	AnnotationDescriptor<Any> ANY = createOrmDescriptor( Any.class );
 	AnnotationDescriptor<AnyDiscriminator> ANY_DISCRIMINATOR = createOrmDescriptor( AnyDiscriminator.class );

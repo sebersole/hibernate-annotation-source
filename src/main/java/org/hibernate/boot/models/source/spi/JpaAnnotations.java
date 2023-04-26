@@ -102,7 +102,7 @@ import jakarta.persistence.Version;
 import static org.hibernate.boot.models.source.internal.AnnotationDescriptorBuilder.createOrmDescriptor;
 
 /**
- * Descriptors for JPA annotations
+ * AnnotationDescriptor references for JPA annotations
  *
  * @author Steve Ebersole
  */

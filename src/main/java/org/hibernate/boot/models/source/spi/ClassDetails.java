@@ -12,8 +12,11 @@ import org.hibernate.boot.models.source.internal.ClassDetailsHelper;
 import org.hibernate.internal.util.IndexedConsumer;
 
 /**
- * Abstraction for what Hibernate understands about a "class", generally before it has access to
- * the actual {@link Class} reference, if there is a {@code Class} at all (dynamic models).
+ * Models details about a class.
+ * <p/>
+ * Additionally, provides an abstraction for dynamic models where there is no
+ * physical {@link Class} as well as support for the Hibernate
+ * {@linkplain #getName() entity-name} (XML) feature.
  *
  * @see ClassDetailsRegistry
  *
