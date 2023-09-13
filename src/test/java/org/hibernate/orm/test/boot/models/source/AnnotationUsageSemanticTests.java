@@ -1,13 +1,14 @@
 /*
  * Hibernate, Relational Persistence for Idiomatic Java
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or http://www.gnu.org/licenses/lgpl-2.1.html.
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright: Red Hat Inc. and Hibernate Authors
  */
 package org.hibernate.orm.test.boot.models.source;
 
 import org.hibernate.annotations.common.reflection.XClass;
 import org.hibernate.annotations.common.reflection.java.JavaReflectionManager;
+import org.hibernate.boot.models.source.internal.hcann.ClassDetailsImpl;
 import org.hibernate.boot.models.source.internal.reflection.ClassDetailsBuilderImpl;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptor;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptorRegistry;
@@ -94,6 +95,9 @@ public class AnnotationUsageSemanticTests {
 		final ClassDetails whateverClass = classDetailsRegistry.resolveClassDetails( Whatever.class.getName() );
 		final ClassDetails somethingClass = classDetailsRegistry.resolveClassDetails( Something.class.getName() );
 		final ClassDetails somethingExtraClass = classDetailsRegistry.resolveClassDetails( SomethingExtra.class.getName() );
+		assertThat( whateverClass ).isInstanceOf( ClassDetailsImpl.class );
+		assertThat( somethingClass ).isInstanceOf( ClassDetailsImpl.class );
+		assertThat( somethingExtraClass ).isInstanceOf( ClassDetailsImpl.class );
 
 		// meta-annotations
 		assertThat( whateverClass.getAnnotation( customMetaAnnotation ) ).isNull();

@@ -1,12 +1,13 @@
 /*
  * Hibernate, Relational Persistence for Idiomatic Java
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or http://www.gnu.org/licenses/lgpl-2.1.html.
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright: Red Hat Inc. and Hibernate Authors
  */
 package org.hibernate.orm.test.boot.models.source;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.hibernate.boot.models.source.internal.ModelProcessingContextImpl;
 import org.hibernate.orm.test.boot.models.CustomAnnotation;
@@ -64,4 +65,16 @@ public class AnnotationUsageSmokeTests {
 		assertThat( metaUsage ).isNotNull();
 	}
 
+	@Test
+	void testGlobalUsages(ServiceRegistryScope scope) {
+		final MetadataBuildingContextTestingImpl buildingContext = new MetadataBuildingContextTestingImpl( scope.getRegistry() );
+		final ModelProcessingContextImpl processingContext = new ModelProcessingContextImpl( buildingContext );
+		final AnnotationDescriptorRegistry descriptorRegistry = processingContext.getAnnotationDescriptorRegistry();
+
+		final AnnotationDescriptor<CustomAnnotation> descriptor = descriptorRegistry.getDescriptor( CustomAnnotation.class );
+		final List<AnnotationUsage<CustomAnnotation>> allDescriptorUsages = processingContext.getAllUsages( descriptor );
+
+		final AnnotationDescriptor<CustomMetaAnnotation> metaDescriptor = descriptorRegistry.getDescriptor( CustomMetaAnnotation.class );
+		final List<AnnotationUsage<CustomAnnotation>> allMetaDescriptorUsages = processingContext.getAllUsages( descriptor );
+	}
 }
