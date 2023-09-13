@@ -1,8 +1,8 @@
 /*
  * Hibernate, Relational Persistence for Idiomatic Java
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or http://www.gnu.org/licenses/lgpl-2.1.html.
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright: Red Hat Inc. and Hibernate Authors
  */
 package org.hibernate.boot.models.spi;
 
@@ -14,6 +14,7 @@ import org.hibernate.boot.models.source.spi.AnnotationDescriptor;
 import org.hibernate.boot.models.source.spi.AnnotationDescriptorRegistry;
 import org.hibernate.boot.models.source.spi.AnnotationUsage;
 import org.hibernate.boot.models.source.spi.ClassDetailsRegistry;
+import org.hibernate.boot.spi.ClassLoaderAccess;
 import org.hibernate.boot.spi.MetadataBuildingContext;
 
 /**
@@ -24,11 +25,6 @@ import org.hibernate.boot.spi.MetadataBuildingContext;
  */
 public interface ModelProcessingContext {
 	/**
-	 * Access larger boostrap context references
-	 */
-	MetadataBuildingContext getMetadataBuildingContext();
-
-	/**
 	 * The registry of annotation descriptors
 	 */
 	AnnotationDescriptorRegistry getAnnotationDescriptorRegistry();
@@ -37,6 +33,18 @@ public interface ModelProcessingContext {
 	 * Registry of managed-classes
 	 */
 	ClassDetailsRegistry getClassDetailsRegistry();
+
+	/**
+	 * If model processing code needs to load things from the class-loader, they should
+	 * really use this access.  At this level, accessing the class-loader at all
+	 * sh
+	 */
+	ClassLoaderAccess getClassLoaderAccess();
+
+	/**
+	 * Access larger boostrap context references
+	 */
+	MetadataBuildingContext getMetadataBuildingContext();
 
 	void registerUsage(AnnotationUsage<?> usage);
 

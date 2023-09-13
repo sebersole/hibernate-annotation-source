@@ -4,31 +4,28 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright: Red Hat Inc. and Hibernate Authors
  */
-package org.hibernate.orm.test.boot.models.intermediate.access;
+
+package org.hibernate.orm.test.boot.models.source;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 /**
- * Simple entity for testing implicit access-type determination.
- * <p/>
- * Implicit access-type will be FIELD due to placement of `@Id`
- *
  * @author Steve Ebersole
  */
 @Entity
-public class SimpleImplicitEntity {
+public class TestEntity {
 	@Id
 	private Integer id;
 	@Basic
 	private String name;
 
-	protected SimpleImplicitEntity() {
+	private TestEntity() {
 		// for use by Hibernate
 	}
 
-	public SimpleImplicitEntity(Integer id, String name) {
+	public TestEntity(Integer id, String name) {
 		this.id = id;
 		this.name = name;
 	}

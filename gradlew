@@ -1,6 +1,13 @@
 #!/bin/sh
 
 #
+# Hibernate, Relational Persistence for Idiomatic Java
+#
+# SPDX-License-Identifier: Apache-2.0
+# Copyright: Red Hat Inc. and Hibernate Authors
+#
+
+#
 # Copyright © 2015-2021 the original authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,8 +1,8 @@
 /*
  * Hibernate, Relational Persistence for Idiomatic Java
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or http://www.gnu.org/licenses/lgpl-2.1.html.
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright: Red Hat Inc. and Hibernate Authors
  */
 package org.hibernate.boot.models.jaxb.internal;
 
@@ -221,7 +221,12 @@ public class XmlMappingProcessor {
 				//			a. could be a normal JPA mapping with specific "HQL import name"
 				//			b. Hibernate entity-name mapping
 				//
+				// todo (annotation-source) : the only real option imo is a separate `<entity entity-name="..." .../>` attribute
+				//
 				// for the time being, assume "normal" mappings
+				// 		- none of these other scenarios are supported today anyway; its one of the goals of this
+				// 		annotation-source work to implement them
+
 				classBindingMap.put( mapping.getClazz(), new ClassProcessingContextImpl( mapping, documentContext ) );
 			} );
 		}
